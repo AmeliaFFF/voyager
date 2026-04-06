@@ -1,4 +1,5 @@
 const express = require('express');
+const authRouter = require("./controllers/AuthRoutes");
 
 const app = express();
 
@@ -9,5 +10,7 @@ app.get("/", (request, response) => {
         message: "Welcome to the Voyager API"
     });
 });
+
+app.use("/auth", authRouter);
 
 module.exports = app;
