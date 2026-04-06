@@ -1,0 +1,86 @@
+const express = require("express");
+const { User } = require("../models/User");
+
+const authRouter = express.Router();
+
+// POST /auth/register
+// Creates a new user account.
+authRouter.post("/register", async (request, response) => {
+    try {
+        const { name, email, password } = request.body || {};
+
+        // Validate required fields.
+        if (!name || !email || !password) {
+            return response.status(400).json({
+                message: "Name, email, and password are required."
+            });
+        }
+
+        // Clean and normalise values before saving to the database.
+        const trimmedName = name.trim();
+        const normalisedEmail = email.trim().toLowerCase();
+
+        // Validate email format.
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(normalisedEmail)) {
+            return response.status(400).json({
+                message: "Please provide a valid email address."
+            });
+        }
+
+        // Validate password length.
+        if (password.length < 8) {
+            return response.status(400).json({
+                message: "Password must be at least 8 characters long."
+            });
+        }
+
+        // Validate password complexity (at least one uppercase letter, one lowercase letter, and one number).
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+
+        if (!passwordRegex.test(password)) {
+            return response.status(400).json({
+                message: "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+            });
+        }
+
+        // Prevent duplicate email registration.
+        const existingUser = await User.findOne({ email: normalisedEmail });
+
+        if (existingUser) {
+            return response.status(409).json({
+                message: "An account with this email already exists."
+            });
+        }
+
+        // Create the new user.
+        // The plain password is passed into passwordHash temporarily. The pre-save hook in the User model will automatically hash the password before saving it to the database.
+        const newUser = await User.create({
+            name: trimmedName,
+            email: normalisedEmail,
+            passwordHash: password
+        });
+
+        // Return a success response without exposing password data.
+        response.status(201).json({
+            message: "User registered successfully.",
+            data: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                createdAt: newUser.createdAt,
+                updatedAt: newUser.updatedAt
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        response.status(500).json({
+            message: "An error occurred while registering the user."
+        });
+    }
+});
+
+module.exports = authRouter;

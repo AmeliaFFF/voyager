@@ -35,21 +35,19 @@ const userSchema = new mongoose.Schema(
 
 // Pre-save hook to hash the password before saving the user document.
 // This runs automatically whenever a user is created or updated.
-userSchema.pre("save", function (next) {
+userSchema.pre("save", function () {
     // Ensure the user has a salt. If not, generate one.
     if (!this.salt) {
         this.salt = crypto.randomBytes(64).toString("hex");
     }
 
     // If the password has not changed, do not hash it again.
-    if (!this.isModified("passwordHash")) return next();
+    if (!this.isModified("passwordHash")) return;
 
     // Hash the password using scrypt and the user's salt.
     this.passwordHash = crypto
         .scryptSync(this.passwordHash, this.salt, 64)
         .toString("hex");
-
-    next();
 });
 
 // Method to compare an incoming password with the stored password hash.
