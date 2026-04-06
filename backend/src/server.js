@@ -1,9 +1,8 @@
 const { loadEnvFile } = require("node:process");
-
-loadEnvFile();
-
 const app = require("./app");
 const { dbConnect } = require("./utils/database");
+
+loadEnvFile();
 
 const PORT = process.env.PORT || 3000;
 
