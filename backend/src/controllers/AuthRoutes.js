@@ -1,5 +1,6 @@
 const express = require("express");
 const { User } = require("../models/User");
+const { generateJwt } = require("../utils/jwtFunctions");
 
 const authRouter = express.Router();
 
@@ -79,6 +80,58 @@ authRouter.post("/register", async (request, response) => {
 
         response.status(500).json({
             message: "An error occurred while registering the user."
+        });
+    }
+});
+
+// POST /auth/login
+// Authenticates a user and returns a JWT.
+authRouter.post("/login", async (request, response) => {
+    try {
+        const { email, password } = request.body || {};
+
+        // Validate required fields.
+        if (!email || !password) {
+            return response.status(400).json({
+                message: "Email and password are required."
+            });
+        }
+
+        // Normalise email before lookup.
+        const normalisedEmail = email.trim().toLowerCase();
+
+        // Find the user by email.
+        const foundUser = await User.findOne({ email: normalisedEmail });
+
+        if (!foundUser) {
+            return response.status(401).json({
+                message: "Invalid email or password."
+            });
+        }
+
+        // Compare the incoming password with the stored password hash.
+        const doPasswordsMatch = foundUser.comparePassword(password);
+
+        if (!doPasswordsMatch) {
+            return response.status(401).json({
+                message: "Invalid email or password."
+            });
+        }
+
+        // Generate a JWT for the logged-in user.
+        const resultJwt = generateJwt(foundUser);
+
+        return response.status(200).json({
+            message: "Login successful.",
+            data: {
+                token: resultJwt
+            }
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while logging in."
         });
     }
 });
