@@ -1,6 +1,7 @@
 const express = require("express");
 const { User } = require("../models/User");
 const { generateJwt } = require("../utils/jwtFunctions");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const authRouter = express.Router();
 
@@ -132,6 +133,40 @@ authRouter.post("/login", async (request, response) => {
 
         return response.status(500).json({
             message: "An error occurred while logging in."
+        });
+    }
+});
+
+// GET /auth/me
+// Returns the currently authenticated user.
+authRouter.get("/me", authMiddleware, async (request, response) => {
+    try {
+        const userId = request.user.userId;
+
+        const foundUser = await User.findById(userId);
+
+        if (!foundUser) {
+            return response.status(404).json({
+                message: "User not found."
+            });
+        }
+
+        return response.status(200).json({
+            message: "Authenticated user retrieved successfully.",
+            data: {
+                id: foundUser._id,
+                name: foundUser.name,
+                email: foundUser.email,
+                createdAt: foundUser.createdAt,
+                updatedAt: foundUser.updatedAt
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while retrieving the user."
         });
     }
 });

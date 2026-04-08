@@ -1,0 +1,17 @@
+info:
+  name: me
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: http://localhost:3000/auth/me
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU2NDE1MDAsImV4cCI6MTc3NjI0NjMwMH0.V-fY6PB6V1Prpok_9FckJ6hI1AeX58ZTaFqVgFK2JOc
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
