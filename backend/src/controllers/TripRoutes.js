@@ -264,4 +264,43 @@ tripRouter.patch("/:tripId", authMiddleware, async (request, response) => {
     }
 });
 
+// DELETE /trips/:tripId
+// Deletes one specific trip for the authenticated user.
+tripRouter.delete("/:tripId", authMiddleware, async (request, response) => {
+    try {
+        const { tripId } = request.params;
+
+        // Validate trip ID format before querying the database.
+        if (!mongoose.Types.ObjectId.isValid(tripId)) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        // Find the trip only if it belongs to the authenticated user.
+        const foundTrip = await Trip.findOne({
+            _id: tripId,
+            userId: request.user.userId
+        });
+
+        if (!foundTrip) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        await foundTrip.deleteOne();
+
+        return response.status(200).json({
+            message: "Trip deleted successfully."
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while deleting the trip."
+        });
+    }
+});
+
 module.exports = tripRouter;
