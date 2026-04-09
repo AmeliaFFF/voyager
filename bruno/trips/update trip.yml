@@ -1,0 +1,24 @@
+info:
+  name: update trip
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: http://localhost:3000/trips/69d772e8b8c38b099bcf51e0
+  body:
+    type: json
+    data: |-
+      {
+        "status": "booked",
+        "notes": "Flights and hotel confirmed"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU2NDQxNTMsImV4cCI6MTc3NjI0ODk1M30.nkoVA5a-qVxgV4PBTJukEYJ_-YA3ycfucSa0TZC_3DU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,5 +1,6 @@
-const express = require('express');
+const express = require("express");
 const authRouter = require("./controllers/AuthRoutes");
+const tripRouter = require("./controllers/TripRoutes");
 const requestLogger = require("./middleware/requestLogger");
 
 const app = express();
@@ -14,5 +15,6 @@ app.get("/", (request, response) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/trips", tripRouter);
 
 module.exports = app;

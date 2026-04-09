@@ -1,0 +1,17 @@
+info:
+  name: delete trip
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://localhost:3000/trips/69d7906862134d82c27c5a36
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU2NDQxNTMsImV4cCI6MTc3NjI0ODk1M30.nkoVA5a-qVxgV4PBTJukEYJ_-YA3ycfucSa0TZC_3DU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
