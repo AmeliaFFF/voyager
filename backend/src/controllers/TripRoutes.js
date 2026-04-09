@@ -5,6 +5,24 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const tripRouter = express.Router();
 
+// Formats a Trip document into a clean API response shape.
+function formatTripResponse(trip) {
+    return {
+        id: trip._id,
+        userId: trip.userId,
+        title: trip.title,
+        status: trip.status,
+        destination: trip.destination,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+        notes: trip.notes,
+        budget: trip.budget,
+        currencyCode: trip.currencyCode,
+        createdAt: trip.createdAt,
+        updatedAt: trip.updatedAt
+    };
+}
+
 // POST /trips
 // Creates a new trip for the authenticated user.
 tripRouter.post("/", authMiddleware, async (request, response) => {
@@ -43,20 +61,7 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
 
         return response.status(201).json({
             message: "Trip created successfully.",
-            data: {
-                id: newTrip._id,
-                userId: newTrip.userId,
-                title: newTrip.title,
-                status: newTrip.status,
-                destination: newTrip.destination,
-                startDate: newTrip.startDate,
-                endDate: newTrip.endDate,
-                notes: newTrip.notes,
-                budget: newTrip.budget,
-                currencyCode: newTrip.currencyCode,
-                createdAt: newTrip.createdAt,
-                updatedAt: newTrip.updatedAt
-            }
+            data: formatTripResponse(newTrip)
         });
     } catch (error) {
         console.error(error);
@@ -89,21 +94,8 @@ tripRouter.get("/", authMiddleware, async (request, response) => {
         return response.status(200).json({
             message: "Trips retrieved successfully.",
             data: {
-                // Mapping to remove internal fields (e.g., _id, __v) and ensures consistent naming (id instead of _id) in the API response.
-                trips: trips.map((trip) => ({
-                    id: trip._id,
-                    userId: trip.userId,
-                    title: trip.title,
-                    status: trip.status,
-                    destination: trip.destination,
-                    startDate: trip.startDate,
-                    endDate: trip.endDate,
-                    notes: trip.notes,
-                    budget: trip.budget,
-                    currencyCode: trip.currencyCode,
-                    createdAt: trip.createdAt,
-                    updatedAt: trip.updatedAt
-                }))
+                // Map each trip document into the API response shape.
+                trips: trips.map(formatTripResponse)
             }
         });
     } catch (error) {
@@ -143,20 +135,7 @@ tripRouter.get("/:tripId", authMiddleware, async (request, response) => {
 
         return response.status(200).json({
             message: "Trip retrieved successfully.",
-            data: {
-                id: foundTrip._id,
-                userId: foundTrip.userId,
-                title: foundTrip.title,
-                status: foundTrip.status,
-                destination: foundTrip.destination,
-                startDate: foundTrip.startDate,
-                endDate: foundTrip.endDate,
-                notes: foundTrip.notes,
-                budget: foundTrip.budget,
-                currencyCode: foundTrip.currencyCode,
-                createdAt: foundTrip.createdAt,
-                updatedAt: foundTrip.updatedAt
-            }
+            data: formatTripResponse(foundTrip)
         });
     } catch (error) {
         console.error(error);
@@ -240,20 +219,7 @@ tripRouter.patch("/:tripId", authMiddleware, async (request, response) => {
 
         return response.status(200).json({
             message: "Trip updated successfully.",
-            data: {
-                id: foundTrip._id,
-                userId: foundTrip.userId,
-                title: foundTrip.title,
-                status: foundTrip.status,
-                destination: foundTrip.destination,
-                startDate: foundTrip.startDate,
-                endDate: foundTrip.endDate,
-                notes: foundTrip.notes,
-                budget: foundTrip.budget,
-                currencyCode: foundTrip.currencyCode,
-                createdAt: foundTrip.createdAt,
-                updatedAt: foundTrip.updatedAt
-            }
+            data: formatTripResponse(foundTrip)
         });
     } catch (error) {
         console.error(error);
