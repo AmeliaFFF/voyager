@@ -1,0 +1,30 @@
+info:
+  name: create trip
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/trips
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Christmas Cruise 2026",
+        "status": "booked",
+        "destination": "South Pacific",
+        "startDate": "2026-12-20",
+        "endDate": "2026-12-27",
+        "notes": "Week long cruise to the South Pacific islands with family",
+        "budget": 15000,
+        "currencyCode": "AUD"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU2NDQxNTMsImV4cCI6MTc3NjI0ODk1M30.nkoVA5a-qVxgV4PBTJukEYJ_-YA3ycfucSa0TZC_3DU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

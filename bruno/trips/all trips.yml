@@ -1,24 +1,11 @@
 info:
-  name: create
+  name: all trips
   type: http
-  seq: 1
+  seq: 2
 
 http:
-  method: POST
+  method: GET
   url: http://localhost:3000/trips
-  body:
-    type: json
-    data: |-
-      {
-        "title": "Japan 2026",
-        "status": "planned",
-        "destination": "Japan",
-        "startDate": "2026-10-01",
-        "endDate": "2026-10-15",
-        "notes": "Spring trip planning",
-        "budget": 5000,
-        "currencyCode": "AUD"
-      }
   auth:
     type: bearer
     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU2NDQxNTMsImV4cCI6MTc3NjI0ODk1M30.nkoVA5a-qVxgV4PBTJukEYJ_-YA3ycfucSa0TZC_3DU

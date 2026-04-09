@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const { Trip } = require("../models/Trip");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -27,6 +28,7 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
         }
 
         // Create the new trip for the authenticated user.
+        // The userId is taken from the JWT (request.user), not the request body, to prevent users from creating trips for other users.
         const newTrip = await Trip.create({
             userId: request.user.userId,
             title: title.trim(),
@@ -76,16 +78,18 @@ tripRouter.get("/", authMiddleware, async (request, response) => {
             userId: request.user.userId
         };
 
-        // Optionally filter by trip status.
+        // Optionally filter by trip status if a query parameter is provided.
         if (status) {
             tripQuery.status = status;
         }
 
+        // Sort trips by start date in ascending order for a consistent timeline view.
         const trips = await Trip.find(tripQuery).sort({ startDate: 1 });
 
         return response.status(200).json({
             message: "Trips retrieved successfully.",
             data: {
+                // Mapping to remove internal fields (e.g., _id, __v) and ensures consistent naming (id instead of _id) in the API response.
                 trips: trips.map((trip) => ({
                     id: trip._id,
                     userId: trip.userId,
@@ -107,6 +111,58 @@ tripRouter.get("/", authMiddleware, async (request, response) => {
 
         return response.status(500).json({
             message: "An error occurred while retrieving trips."
+        });
+    }
+});
+
+// GET /trips/:tripId
+// Returns one specific trip for the authenticated user.
+tripRouter.get("/:tripId", authMiddleware, async (request, response) => {
+    try {
+        const { tripId } = request.params;
+
+        // Validate trip ID format before querying the database.
+        // This prevents Mongoose CastErrors and ensures invalid IDs return a 404 instead of a 500.
+        if (!mongoose.Types.ObjectId.isValid(tripId)) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        // Find the trip only if it belongs to the authenticated user (prevents users from accessing other users' trips).
+        const foundTrip = await Trip.findOne({
+            _id: tripId,
+            userId: request.user.userId
+        });
+
+        if (!foundTrip) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        return response.status(200).json({
+            message: "Trip retrieved successfully.",
+            data: {
+                id: foundTrip._id,
+                userId: foundTrip.userId,
+                title: foundTrip.title,
+                status: foundTrip.status,
+                destination: foundTrip.destination,
+                startDate: foundTrip.startDate,
+                endDate: foundTrip.endDate,
+                notes: foundTrip.notes,
+                budget: foundTrip.budget,
+                currencyCode: foundTrip.currencyCode,
+                createdAt: foundTrip.createdAt,
+                updatedAt: foundTrip.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while retrieving the trip."
         });
     }
 });
