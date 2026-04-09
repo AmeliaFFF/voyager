@@ -65,4 +65,50 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
     }
 });
 
+// GET /trips
+// Returns all trips for the authenticated user.
+tripRouter.get("/", authMiddleware, async (request, response) => {
+    try {
+        const { status } = request.query;
+
+        // Build the query so only the authenticated user's trips are returned.
+        const tripQuery = {
+            userId: request.user.userId
+        };
+
+        // Optionally filter by trip status.
+        if (status) {
+            tripQuery.status = status;
+        }
+
+        const trips = await Trip.find(tripQuery).sort({ startDate: 1 });
+
+        return response.status(200).json({
+            message: "Trips retrieved successfully.",
+            data: {
+                trips: trips.map((trip) => ({
+                    id: trip._id,
+                    userId: trip.userId,
+                    title: trip.title,
+                    status: trip.status,
+                    destination: trip.destination,
+                    startDate: trip.startDate,
+                    endDate: trip.endDate,
+                    notes: trip.notes,
+                    budget: trip.budget,
+                    currencyCode: trip.currencyCode,
+                    createdAt: trip.createdAt,
+                    updatedAt: trip.updatedAt
+                }))
+            }
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while retrieving trips."
+        });
+    }
+});
+
 module.exports = tripRouter;

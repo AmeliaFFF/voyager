@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const authRouter = require("./controllers/AuthRoutes");
 const tripRouter = require("./controllers/TripRoutes");
 const requestLogger = require("./middleware/requestLogger");
