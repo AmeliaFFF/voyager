@@ -167,4 +167,101 @@ tripRouter.get("/:tripId", authMiddleware, async (request, response) => {
     }
 });
 
+// PATCH /trips/:tripId
+// Updates one specific trip for the authenticated user.
+tripRouter.patch("/:tripId", authMiddleware, async (request, response) => {
+    try {
+        const { tripId } = request.params;
+
+        // Validate trip ID format before querying the database.
+        if (!mongoose.Types.ObjectId.isValid(tripId)) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        // Find the trip only if it belongs to the authenticated user.
+        const foundTrip = await Trip.findOne({
+            _id: tripId,
+            userId: request.user.userId
+        });
+
+        if (!foundTrip) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        const {
+            title,
+            status,
+            destination,
+            startDate,
+            endDate,
+            notes,
+            budget,
+            currencyCode
+        } = request.body || {};
+
+        // Only update fields that were actually provided in the request body.
+        if (title !== undefined) {
+            foundTrip.title = title.trim();
+        }
+
+        if (status !== undefined) {
+            foundTrip.status = status;
+        }
+
+        if (destination !== undefined) {
+            foundTrip.destination = destination.trim();
+        }
+
+        if (startDate !== undefined) {
+            foundTrip.startDate = startDate;
+        }
+
+        if (endDate !== undefined) {
+            foundTrip.endDate = endDate;
+        }
+
+        if (notes !== undefined) {
+            foundTrip.notes = notes;
+        }
+
+        if (budget !== undefined) {
+            foundTrip.budget = budget;
+        }
+
+        if (currencyCode !== undefined) {
+            foundTrip.currencyCode = currencyCode;
+        }
+
+        await foundTrip.save();
+
+        return response.status(200).json({
+            message: "Trip updated successfully.",
+            data: {
+                id: foundTrip._id,
+                userId: foundTrip.userId,
+                title: foundTrip.title,
+                status: foundTrip.status,
+                destination: foundTrip.destination,
+                startDate: foundTrip.startDate,
+                endDate: foundTrip.endDate,
+                notes: foundTrip.notes,
+                budget: foundTrip.budget,
+                currencyCode: foundTrip.currencyCode,
+                createdAt: foundTrip.createdAt,
+                updatedAt: foundTrip.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while updating the trip."
+        });
+    }
+});
+
 module.exports = tripRouter;
