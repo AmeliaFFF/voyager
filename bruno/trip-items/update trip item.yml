@@ -1,0 +1,24 @@
+info:
+  name: update trip item
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: http://localhost:3000/trip-items/69d853961e5ba9a13ca73632
+  body:
+    type: json
+    data: |-
+      {
+        "status": "completed",
+        "notes": "Checked in successfully"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU3ODE5NjgsImV4cCI6MTc3NjM4Njc2OH0.tMTPjRsGnVBjGSSuguDGHcbaFG1nehdWqidrKkWPGa4
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

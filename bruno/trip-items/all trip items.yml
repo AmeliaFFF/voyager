@@ -1,0 +1,17 @@
+info:
+  name: all trip items
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:3000/trips/69d772e8b8c38b099bcf51e0/items
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzU3ODE5NjgsImV4cCI6MTc3NjM4Njc2OH0.tMTPjRsGnVBjGSSuguDGHcbaFG1nehdWqidrKkWPGa4
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

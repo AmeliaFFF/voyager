@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const { Trip } = require("../models/Trip");
+const { TripItem } = require("../models/TripItem");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const tripRouter = express.Router();
@@ -255,6 +256,8 @@ tripRouter.delete("/:tripId", authMiddleware, async (request, response) => {
             });
         }
 
+        // Delete all TripItems that belong to this trip first, then delete the trip itself to avoid orphaned TripItems.
+        await TripItem.deleteMany({ tripId: foundTrip._id });
         await foundTrip.deleteOne();
 
         return response.status(200).json({
