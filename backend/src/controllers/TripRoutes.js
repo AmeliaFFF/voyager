@@ -24,6 +24,8 @@ function formatTripResponse(trip) {
     };
 }
 
+const allowedTripStatuses = ["planned", "booked", "completed"];
+
 // POST /trips
 // Creates a new trip for the authenticated user.
 tripRouter.post("/", authMiddleware, async (request, response) => {
@@ -46,13 +48,33 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
             });
         }
 
+        const trimmedTitle = title.trim();
+        const trimmedDestination = destination.trim();
+
+        // Validate trimmed required string fields.
+        if (!trimmedTitle || !trimmedDestination) {
+            return response.status(400).json({
+                message: "Title and destination cannot be empty."
+            });
+        }
+
+        const parsedStartDate = new Date(startDate);
+        const parsedEndDate = new Date(endDate);
+
+        // Validate trip date order.
+        if (parsedStartDate > parsedEndDate) {
+            return response.status(400).json({
+                message: "startDate must be before or equal to endDate."
+            });
+        }
+
         // Create the new trip for the authenticated user.
         // The userId is taken from the JWT (request.user), not the request body, to prevent users from creating trips for other users.
         const newTrip = await Trip.create({
             userId: request.user.userId,
-            title: title.trim(),
+            title: trimmedTitle,
             status,
-            destination: destination.trim(),
+            destination: trimmedDestination,
             startDate,
             endDate,
             notes,
@@ -86,6 +108,12 @@ tripRouter.get("/", authMiddleware, async (request, response) => {
 
         // Optionally filter by trip status if a query parameter is provided.
         if (status) {
+            if (!allowedTripStatuses.includes(status)) {
+                return response.status(400).json({
+                    message: "Invalid status filter."
+                });
+            }
+
             tripQuery.status = status;
         }
 
@@ -183,9 +211,27 @@ tripRouter.patch("/:tripId", authMiddleware, async (request, response) => {
             currencyCode
         } = request.body || {};
 
+        const nextStartDate = startDate !== undefined ? new Date(startDate) : foundTrip.startDate;
+        const nextEndDate = endDate !== undefined ? new Date(endDate) : foundTrip.endDate;
+
+        // Validate trip date order after applying any incoming updates.
+        if (nextStartDate > nextEndDate) {
+            return response.status(400).json({
+                message: "startDate must be before or equal to endDate."
+            });
+        }
+
         // Only update fields that were actually provided in the request body.
         if (title !== undefined) {
-            foundTrip.title = title.trim();
+            const trimmedTitle = title.trim();
+
+            if (!trimmedTitle) {
+                return response.status(400).json({
+                    message: "Title cannot be empty."
+                });
+            }
+
+            foundTrip.title = trimmedTitle;
         }
 
         if (status !== undefined) {
@@ -193,7 +239,15 @@ tripRouter.patch("/:tripId", authMiddleware, async (request, response) => {
         }
 
         if (destination !== undefined) {
-            foundTrip.destination = destination.trim();
+            const trimmedDestination = destination.trim();
+
+            if (!trimmedDestination) {
+                return response.status(400).json({
+                    message: "Destination cannot be empty."
+                });
+            }
+
+            foundTrip.destination = trimmedDestination;
         }
 
         if (startDate !== undefined) {

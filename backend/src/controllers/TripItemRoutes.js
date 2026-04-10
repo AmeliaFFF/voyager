@@ -27,6 +27,9 @@ function formatTripItemResponse(tripItem) {
     };
 }
 
+const allowedTripItemStatuses = ["planned", "booked", "completed"];
+const allowedTripItemTypes = ["flight", "transport", "accommodation", "tour", "cruise", "activity", "other"];
+
 // POST /trips/:tripId/items
 // Creates a new TripItem inside a specific trip for the authenticated user.
 tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, response) => {
@@ -73,12 +76,32 @@ tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, resp
             });
         }
 
+        const trimmedTitle = title.trim();
+
+        // Validate trimmed required string fields.
+        if (!trimmedTitle) {
+            return response.status(400).json({
+                message: "Title cannot be empty."
+            });
+        }
+
+        if (endDateTime) {
+            const parsedStart = new Date(startDateTime);
+            const parsedEnd = new Date(endDateTime);
+
+            if (parsedStart > parsedEnd) {
+                return response.status(400).json({
+                    message: "startDateTime must be before or equal to endDateTime."
+                });
+            }
+        }
+
         // Create the new TripItem for the authenticated user's trip.
         const newTripItem = await TripItem.create({
             tripId: foundTrip._id,
             type,
             status,
-            title: title.trim(),
+            title: trimmedTitle,
             location,
             startDateTime,
             endDateTime,
@@ -135,11 +158,23 @@ tripItemRouter.get("/trips/:tripId/items", authMiddleware, async (request, respo
 
         // Optionally filter by TripItem type.
         if (type) {
+            if (!allowedTripItemTypes.includes(type)) {
+                return response.status(400).json({
+                    message: "Invalid type filter."
+                });
+            }
+
             tripItemQuery.type = type;
         }
 
         // Optionally filter by TripItem status.
         if (status) {
+            if (!allowedTripItemStatuses.includes(status)) {
+                return response.status(400).json({
+                    message: "Invalid status filter."
+                });
+            }
+
             tripItemQuery.status = status;
         }
 
@@ -254,6 +289,15 @@ tripItemRouter.patch("/trip-items/:tripItemId", authMiddleware, async (request, 
             notes
         } = request.body || {};
 
+        const nextStartDateTime = startDateTime !== undefined ? new Date(startDateTime) : foundTripItem.startDateTime;
+        const nextEndDateTime = endDateTime !== undefined ? new Date(endDateTime) : foundTripItem.endDateTime;
+
+        if (nextEndDateTime && nextStartDateTime > nextEndDateTime) {
+            return response.status(400).json({
+                message: "startDateTime must be before or equal to endDateTime."
+            });
+        }
+
         // Only update fields that were actually provided in the request body.
         if (type !== undefined) {
             foundTripItem.type = type;
@@ -264,7 +308,15 @@ tripItemRouter.patch("/trip-items/:tripItemId", authMiddleware, async (request, 
         }
 
         if (title !== undefined) {
-            foundTripItem.title = title.trim();
+            const trimmedTitle = title.trim();
+
+            if (!trimmedTitle) {
+                return response.status(400).json({
+                    message: "Title cannot be empty."
+                });
+            }
+
+            foundTripItem.title = trimmedTitle;
         }
 
         if (location !== undefined) {
