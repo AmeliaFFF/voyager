@@ -22,12 +22,19 @@ authRouter.post("/register", async (request, response) => {
         const trimmedName = name.trim();
         const normalisedEmail = email.trim().toLowerCase();
 
+        // Validate trimmed required string fields.
+        if (!trimmedName || !normalisedEmail) {
+            return response.status(400).json({
+                message: "Name and email cannot be empty."
+            });
+        }
+
         // Validate email format.
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(normalisedEmail)) {
             return response.status(400).json({
-                message: "Please provide a valid email address."
+                message: "A valid email address is required."
             });
         }
 
