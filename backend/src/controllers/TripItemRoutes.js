@@ -102,4 +102,63 @@ tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, resp
     }
 });
 
+// GET /trips/:tripId/items
+// Returns all TripItems for a specific trip owned by the authenticated user.
+tripItemRouter.get("/trips/:tripId/items", authMiddleware, async (request, response) => {
+    try {
+        const { tripId } = request.params;
+        const { type, status } = request.query;
+
+        // Validate trip ID format before querying the database.
+        if (!mongoose.Types.ObjectId.isValid(tripId)) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        // Confirm the trip exists and belongs to the authenticated user.
+        const foundTrip = await Trip.findOne({
+            _id: tripId,
+            userId: request.user.userId
+        });
+
+        if (!foundTrip) {
+            return response.status(404).json({
+                message: "Trip not found."
+            });
+        }
+
+        // Build the query so only TripItems for this trip are returned.
+        const tripItemQuery = {
+            tripId: foundTrip._id
+        };
+
+        // Optionally filter by TripItem type.
+        if (type) {
+            tripItemQuery.type = type;
+        }
+
+        // Optionally filter by TripItem status.
+        if (status) {
+            tripItemQuery.status = status;
+        }
+
+        // Sort TripItems chronologically by start date/time.
+        const tripItems = await TripItem.find(tripItemQuery).sort({ startDateTime: 1 });
+
+        return response.status(200).json({
+            message: "Trip items retrieved successfully.",
+            data: {
+                tripItems: tripItems.map(formatTripItemResponse)
+            }
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while retrieving trip items."
+        });
+    }
+});
+
 module.exports = tripItemRouter;
