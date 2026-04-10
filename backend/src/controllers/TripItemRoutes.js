@@ -207,4 +207,111 @@ tripItemRouter.get("/trip-items/:tripItemId", authMiddleware, async (request, re
     }
 });
 
+// PATCH /trip-items/:tripItemId
+// Updates one specific TripItem for the authenticated user.
+tripItemRouter.patch("/trip-items/:tripItemId", authMiddleware, async (request, response) => {
+    try {
+        const { tripItemId } = request.params;
+
+        // Validate TripItem ID format before querying the database.
+        if (!mongoose.Types.ObjectId.isValid(tripItemId)) {
+            return response.status(404).json({
+                message: "Trip item not found."
+            });
+        }
+
+        const foundTripItem = await TripItem.findById(tripItemId);
+
+        if (!foundTripItem) {
+            return response.status(404).json({
+                message: "Trip item not found."
+            });
+        }
+        
+        // Confirm the parent trip belongs to the authenticated user.
+        const foundTrip = await Trip.findOne({
+            _id: foundTripItem.tripId,
+            userId: request.user.userId
+        });
+        
+        if (!foundTrip) {
+            return response.status(404).json({
+                message: "Trip item not found."
+            });
+        }
+
+        const {
+            type,
+            status,
+            title,
+            location,
+            startDateTime,
+            endDateTime,
+            provider,
+            bookingReference,
+            cost,
+            currencyCode,
+            notes
+        } = request.body || {};
+
+        // Only update fields that were actually provided in the request body.
+        if (type !== undefined) {
+            foundTripItem.type = type;
+        }
+
+        if (status !== undefined) {
+            foundTripItem.status = status;
+        }
+
+        if (title !== undefined) {
+            foundTripItem.title = title.trim();
+        }
+
+        if (location !== undefined) {
+            foundTripItem.location = location.trim();
+        }
+
+        if (startDateTime !== undefined) {
+            foundTripItem.startDateTime = startDateTime;
+        }
+
+        if (endDateTime !== undefined) {
+            foundTripItem.endDateTime = endDateTime;
+        }
+
+        if (provider !== undefined) {
+            foundTripItem.provider = provider.trim();
+        }
+
+        if (bookingReference !== undefined) {
+            foundTripItem.bookingReference = bookingReference.trim();
+        }
+
+        if (cost !== undefined) {
+            foundTripItem.cost = cost;
+        }
+
+        if (currencyCode !== undefined) {
+            foundTripItem.currencyCode = currencyCode;
+        }
+
+        if (notes !== undefined) {
+            foundTripItem.notes = notes;
+        }
+
+        await foundTripItem.save();
+
+        return response.status(200).json({
+            message: "Trip item updated successfully.",
+            data: formatTripItemResponse(foundTripItem)
+        });
+    } catch (error) {
+        console.error(error);
+
+        return response.status(500).json({
+            message: "An error occurred while updating the trip item."
+        });
+    }
+});
+
 module.exports = tripItemRouter;
