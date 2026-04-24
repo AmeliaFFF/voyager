@@ -4,6 +4,7 @@ const cors = require("cors");
 const authRouter = require("./controllers/AuthRoutes");
 const tripRouter = require("./controllers/TripRoutes");
 const tripItemRouter = require("./controllers/TripItemRoutes");
+const exportRouter = require("./controllers/ExportRoutes");
 const requestLogger = require("./middleware/requestLogger");
 
 const app = express();
@@ -30,5 +31,6 @@ app.get("/", (request, response) => {
 app.use("/auth", authRouter);
 app.use("/trips", tripRouter);
 app.use("/", tripItemRouter);
+app.use("/trips", exportRouter);
 
 module.exports = app;

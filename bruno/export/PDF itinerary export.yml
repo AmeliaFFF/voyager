@@ -1,0 +1,17 @@
+info:
+  name: PDF itinerary export
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/trips/69d772e8b8c38b099bcf51e0/export/itinerary
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpYXQiOjE3NzcwMDU5MjgsImV4cCI6MTc3NzYxMDcyOH0.xnxHbzmYPCw3gnIHe6c8zjXM3gOMbJx_T5J-pZL4WQE
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
