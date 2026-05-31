@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { tripStatusValues } = require("../utils/enumValues");
 
 const tripSchema = new mongoose.Schema(
     {
@@ -15,7 +16,7 @@ const tripSchema = new mongoose.Schema(
         status: {
             type: String,
             required: true,
-            enum: ["planned", "booked", "completed", "cancelled"],
+            enum: tripStatusValues,
             default: "planned"
         },
         destination: {
