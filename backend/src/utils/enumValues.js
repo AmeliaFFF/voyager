@@ -6,12 +6,12 @@ const tripStatusValues = [
 ];
 
 const tripItemTypeValues = [
-    "flight", 
-    "transport", 
-    "accommodation", 
-    "tour", 
-    "cruise", 
-    "activity", 
+    "flight",
+    "transport",
+    "accommodation",
+    "tour",
+    "cruise",
+    "activity",
     "other"
 ];
 

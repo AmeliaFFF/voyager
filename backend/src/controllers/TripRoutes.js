@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const { Trip } = require("../models/Trip");
 const { TripItem } = require("../models/TripItem");
 const authMiddleware = require("../middleware/authMiddleware");
+const { tripStatusValues } = require("../utils/enumValues");
+const { isValidEnumValue } = require("../utils/enumValidation");
 
 const tripRouter = express.Router();
 
@@ -24,8 +26,6 @@ function formatTripResponse(trip) {
     };
 }
 
-const allowedTripStatuses = ["planned", "booked", "completed"];
-
 // POST /trips
 // Creates a new trip for the authenticated user.
 tripRouter.post("/", authMiddleware, async (request, response) => {
@@ -42,9 +42,10 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
         } = request.body || {};
 
         // Validate required fields.
-        if (!title || !status || !destination || !startDate || !endDate) {
+        // Status is optional because the Trip model defaults it to "planned".
+        if (!title || !destination || !startDate || !endDate) {
             return response.status(400).json({
-                message: "Title, status, destination, startDate, and endDate are required."
+                message: "Title, destination, startDate, and endDate are required."
             });
         }
 
@@ -55,6 +56,14 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
         if (!trimmedTitle || !trimmedDestination) {
             return response.status(400).json({
                 message: "Title and destination cannot be empty."
+            });
+        }
+
+        // Validate status if it was provided.
+        // If status is omitted, the Trip model will use the default value of "planned".
+        if (status !== undefined && !isValidEnumValue(status, tripStatusValues)) {
+            return response.status(400).json({
+                message: `Invalid trip status. Status must be one of: ${tripStatusValues.join(", ")}.`
             });
         }
 
@@ -70,17 +79,22 @@ tripRouter.post("/", authMiddleware, async (request, response) => {
 
         // Create the new trip for the authenticated user.
         // The userId is taken from the JWT (request.user), not the request body, to prevent users from creating trips for other users.
-        const newTrip = await Trip.create({
+        const newTripData = {
             userId: request.user.userId,
             title: trimmedTitle,
-            status,
             destination: trimmedDestination,
             startDate,
             endDate,
             notes,
             budget,
             currencyCode
-        });
+        };
+
+        if (status !== undefined) {
+            newTripData.status = status;
+        }
+
+        const newTrip = await Trip.create(newTripData);
 
         return response.status(201).json({
             message: "Trip created successfully.",
@@ -108,9 +122,9 @@ tripRouter.get("/", authMiddleware, async (request, response) => {
 
         // Optionally filter by trip status if a query parameter is provided.
         if (status) {
-            if (!allowedTripStatuses.includes(status)) {
+            if (!isValidEnumValue(status, tripStatusValues)) {
                 return response.status(400).json({
-                    message: "Invalid status filter."
+                    message: `Invalid status filter. Status must be one of: ${tripStatusValues.join(", ")}.`
                 });
             }
 
@@ -235,6 +249,12 @@ tripRouter.patch("/:tripId", authMiddleware, async (request, response) => {
         }
 
         if (status !== undefined) {
+            if (!isValidEnumValue(status, tripStatusValues)) {
+                return response.status(400).json({
+                    message: `Invalid trip status. Status must be one of: ${tripStatusValues.join(", ")}.`
+                });
+            }
+
             foundTrip.status = status;
         }
 
