@@ -15,7 +15,8 @@ const tripItemSchema = new mongoose.Schema(
         status: {
             type: String,
             required: true,
-            enum: ["planned", "booked", "completed"]
+            enum: ["planned", "booked", "completed", "cancelled"],
+            default: "planned"
         },
         title: {
             type: String,
