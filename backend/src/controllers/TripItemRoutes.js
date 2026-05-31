@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const { Trip } = require("../models/Trip");
 const { TripItem } = require("../models/TripItem");
 const authMiddleware = require("../middleware/authMiddleware");
+const { tripItemTypeValues, tripItemStatusValues } = require("../utils/enumValues");
+const { isValidEnumValue } = require("../utils/enumValidation");
 
 const tripItemRouter = express.Router();
 
@@ -26,9 +28,6 @@ function formatTripItemResponse(tripItem) {
         updatedAt: tripItem.updatedAt
     };
 }
-
-const allowedTripItemStatuses = ["planned", "booked", "completed"];
-const allowedTripItemTypes = ["flight", "transport", "accommodation", "tour", "cruise", "activity", "other"];
 
 // POST /trips/:tripId/items
 // Creates a new TripItem inside a specific trip for the authenticated user.
@@ -70,9 +69,10 @@ tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, resp
         } = request.body || {};
 
         // Validate required fields.
-        if (!type || !status || !title || !startDateTime) {
+        // Status is optional because the TripItem model defaults it to "planned".
+        if (!type || !title || !startDateTime) {
             return response.status(400).json({
-                message: "Type, status, title, and startDateTime are required."
+                message: "Type, title, and startDateTime are required."
             });
         }
 
@@ -82,6 +82,21 @@ tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, resp
         if (!trimmedTitle) {
             return response.status(400).json({
                 message: "Title cannot be empty."
+            });
+        }
+
+        // Validate TripItem type.
+        if (!isValidEnumValue(type, tripItemTypeValues)) {
+            return response.status(400).json({
+                message: `Invalid trip item type. Type must be one of: ${tripItemTypeValues.join(", ")}.`
+            });
+        }
+
+        // Validate status if it was provided.
+        // If status is omitted, the TripItem model will use the default value of "planned".
+        if (status !== undefined && !isValidEnumValue(status, tripItemStatusValues)) {
+            return response.status(400).json({
+                message: `Invalid trip item status. Status must be one of: ${tripItemStatusValues.join(", ")}.`
             });
         }
 
@@ -97,10 +112,9 @@ tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, resp
         }
 
         // Create the new TripItem for the authenticated user's trip.
-        const newTripItem = await TripItem.create({
+        const newTripItemData = {
             tripId: foundTrip._id,
             type,
-            status,
             title: trimmedTitle,
             location,
             startDateTime,
@@ -110,7 +124,13 @@ tripItemRouter.post("/trips/:tripId/items", authMiddleware, async (request, resp
             cost,
             currencyCode,
             notes
-        });
+        };
+
+        if (status !== undefined) {
+            newTripItemData.status = status;
+        }
+
+        const newTripItem = await TripItem.create(newTripItemData);
 
         return response.status(201).json({
             message: "Trip item created successfully.",
@@ -158,9 +178,9 @@ tripItemRouter.get("/trips/:tripId/items", authMiddleware, async (request, respo
 
         // Optionally filter by TripItem type.
         if (type) {
-            if (!allowedTripItemTypes.includes(type)) {
+            if (!isValidEnumValue(type, tripItemTypeValues)) {
                 return response.status(400).json({
-                    message: "Invalid type filter."
+                    message: `Invalid type filter. Type must be one of: ${tripItemTypeValues.join(", ")}.`
                 });
             }
 
@@ -169,9 +189,9 @@ tripItemRouter.get("/trips/:tripId/items", authMiddleware, async (request, respo
 
         // Optionally filter by TripItem status.
         if (status) {
-            if (!allowedTripItemStatuses.includes(status)) {
+            if (!isValidEnumValue(status, tripItemStatusValues)) {
                 return response.status(400).json({
-                    message: "Invalid status filter."
+                    message: `Invalid status filter. Status must be one of: ${tripItemStatusValues.join(", ")}.`
                 });
             }
 
@@ -300,10 +320,22 @@ tripItemRouter.patch("/trip-items/:tripItemId", authMiddleware, async (request, 
 
         // Only update fields that were actually provided in the request body.
         if (type !== undefined) {
+            if (!isValidEnumValue(type, tripItemTypeValues)) {
+                return response.status(400).json({
+                    message: `Invalid trip item type. Type must be one of: ${tripItemTypeValues.join(", ")}.`
+                });
+            }
+
             foundTripItem.type = type;
         }
 
         if (status !== undefined) {
+            if (!isValidEnumValue(status, tripItemStatusValues)) {
+                return response.status(400).json({
+                    message: `Invalid trip item status. Status must be one of: ${tripItemStatusValues.join(", ")}.`
+                });
+            }
+
             foundTripItem.status = status;
         }
 
