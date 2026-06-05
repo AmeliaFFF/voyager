@@ -1,0 +1,17 @@
+info:
+  name: one trip
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:3000/admin/trips/69d772e8b8c38b099bcf51e0
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQzNWQzZmZiYzYzZDQ0ZjIzYjg2NTciLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3ODA2MjU5NzYsImV4cCI6MTc4MTIzMDc3Nn0.zqGKcw3e5clL_8_uCi_T4yKxInB-P12RdFA0UkidpJc
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

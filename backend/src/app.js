@@ -5,6 +5,7 @@ const authRouter = require("./controllers/AuthRoutes");
 const tripRouter = require("./controllers/TripRoutes");
 const tripItemRouter = require("./controllers/TripItemRoutes");
 const exportRouter = require("./controllers/ExportRoutes");
+const adminRouter = require("./controllers/AdminRoutes");
 const requestLogger = require("./middleware/requestLogger");
 
 const app = express();
@@ -32,5 +33,6 @@ app.use("/auth", authRouter);
 app.use("/trips", tripRouter);
 app.use("/", tripItemRouter);
 app.use("/trips", exportRouter);
+app.use("/admin", adminRouter);
 
 module.exports = app;

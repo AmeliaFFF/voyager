@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 function generateJwt(targetUser) {
     const newJwt = jwt.sign(
         {
-            userId: targetUser.id
+            userId: targetUser.id,
+            isAdmin: targetUser.isAdmin
         },
         process.env.JWT_SECRET_KEY,
         {
@@ -24,4 +25,4 @@ function verifyJwt(targetJwt) {
 module.exports = {
     generateJwt,
     verifyJwt
-}
+};
