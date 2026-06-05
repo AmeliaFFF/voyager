@@ -68,6 +68,7 @@ authRouter.post("/register", async (request, response) => {
         const newUser = await User.create({
             name: trimmedName,
             email: normalisedEmail,
+            isAdmin: false,
             passwordHash: password
         });
 
@@ -78,6 +79,7 @@ authRouter.post("/register", async (request, response) => {
                 id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
+                isAdmin: newUser.isAdmin,
                 createdAt: newUser.createdAt,
                 updatedAt: newUser.updatedAt
             }
@@ -164,6 +166,7 @@ authRouter.get("/me", authMiddleware, async (request, response) => {
                 id: foundUser._id,
                 name: foundUser.name,
                 email: foundUser.email,
+                isAdmin: foundUser.isAdmin,
                 createdAt: foundUser.createdAt,
                 updatedAt: foundUser.updatedAt
             }
