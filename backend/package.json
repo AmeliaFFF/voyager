@@ -9,8 +9,8 @@
     "dev:db:seed": "node ./src/utils/dev/dbSeed.js",
     "dev:db:wipe": "node ./src/utils/dev/dbWipe.js",
     "dev:db:wipe-and-seed": "npm run dev:db:wipe && npm run dev:db:seed",
-    "test": "node --env-file=.env ./node_modules/jest/bin/jest.js",
-    "test:coverage": "node --env-file=.env ./node_modules/jest/bin/jest.js --coverage"
+    "test": "node --env-file=.env ./node_modules/jest/bin/jest.js --runInBand",
+    "test:coverage": "node --env-file=.env ./node_modules/jest/bin/jest.js --coverage --runInBand"
   },
   "keywords": [],
   "author": "",
