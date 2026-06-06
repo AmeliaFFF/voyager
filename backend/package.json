@@ -5,7 +5,10 @@
   "scripts": {
     "start": "node ./src/server.js",
     "dev:watch": "node --watch ./src/server.js",
-    "setup:env": "node ./src/utils/dev/setupEnv.js"
+    "setup:env": "node ./src/utils/dev/setupEnv.js",
+    "dev:db:seed": "node ./src/utils/dev/dbSeed.js",
+    "dev:db:wipe": "node ./src/utils/dev/dbWipe.js",
+    "dev:db:wipe-and-seed": "npm run dev:db:wipe && npm run dev:db:seed"
   },
   "keywords": [],
   "author": "",
