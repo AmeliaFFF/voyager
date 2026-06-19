@@ -1,10 +1,7 @@
+import AppRoutes from "./routes/AppRoutes.jsx";
+
 function App() {
-  return (
-    <main>
-      <h1>Voyager</h1>
-      <p>Application frontend setup is ready.</p>
-    </main>
-  );
+  return <AppRoutes />;
 }
 
 export default App;
