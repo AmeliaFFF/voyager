@@ -5,8 +5,11 @@ import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import Toolbar from "@mui/material/Toolbar";
 import { Link as RouterLink, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
 
 function AppLayout() {
+  const { isAuthenticated, logout } = useAuth();
+
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <AppBar component="header" position="static">
@@ -33,13 +36,27 @@ function AppLayout() {
             />
           </Link>
 
-          <Button component={RouterLink} to="/" color="inherit">
-            Home
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <Button component={RouterLink} to="/trips" color="inherit">
+                Trips
+              </Button>
 
-          <Button component={RouterLink} to="/trips" color="inherit">
-            Trips
-          </Button>
+              <Button onClick={logout} color="inherit">
+                Log out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button component={RouterLink} to="/login" color="inherit">
+                Log in
+              </Button>
+
+              <Button component={RouterLink} to="/register" color="inherit">
+                Register
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
 

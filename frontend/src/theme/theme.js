@@ -34,6 +34,18 @@ const theme = createTheme({
         text: "#991B1B",
       },
     },
+    feedback: {
+      error: {
+        background: "#FEF2F2",
+        border: "#FCA5A5",
+        text: "#991B1B",
+      },
+      success: {
+        background: "#F0FDF4",
+        border: "#86EFAC",
+        text: "#166534",
+      },
+    },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
