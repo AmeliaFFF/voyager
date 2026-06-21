@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
+import NewTripPage from "../pages/NewTripPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
           {
             path: "trips",
             element: <TripsPage />,
+          },
+          {
+            path: "trips/new",
+            element: <NewTripPage />,
           },
         ],
       },
