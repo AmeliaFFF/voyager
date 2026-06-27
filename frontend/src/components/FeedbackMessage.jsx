@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 
-function FeedbackMessage({ children, severity = "error" }) {
+function FeedbackMessage({ children, severity = "error", textAlign = "left" }) {
   return (
     <Box
       role="alert"
@@ -16,6 +16,7 @@ function FeedbackMessage({ children, severity = "error" }) {
           color: colours.text,
           px: 2,
           py: 1.5,
+          textAlign,
         };
       }}
     >

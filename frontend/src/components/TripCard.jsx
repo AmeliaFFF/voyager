@@ -31,10 +31,17 @@ function TripCard({ trip }) {
   return (
     <ContentCard
       sx={{
+        display: "flex",
         height: "100%",
       }}
     >
-      <Stack spacing={2} sx={{ height: "100%" }}>
+      <Stack
+        sx={{
+          flexGrow: 1,
+          width: "100%",
+          gap: 2,
+        }}
+      >
         <Typography component="h2" variant="h2">
           {trip.title}
         </Typography>
@@ -147,11 +154,24 @@ function TripCard({ trip }) {
           ) : null}
         </Box>
 
-        <Box sx={{ mt: "auto" }}>
+        <Stack
+          direction={{
+            xs: "column",
+            sm: "row",
+          }}
+          sx={{
+            gap: 1.5,
+            mt: "auto",
+          }}
+        >
           <Button fullWidth component={RouterLink} to={`/trips/${trip.id}`} variant="outlined">
             View trip
           </Button>
-        </Box>
+
+          <Button fullWidth component={RouterLink} to={`/trips/${trip.id}/edit`} variant="outlined">
+            Edit trip
+          </Button>
+        </Stack>
       </Stack>
     </ContentCard>
   );

@@ -1,12 +1,13 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout.jsx";
+import NotFoundPage from "../pages/NotFoundPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
-import NewTripPage from "../pages/NewTripPage.jsx";
-import NotFoundPage from "../pages/NotFoundPage.jsx";
-import ProtectedRoute from "./ProtectedRoute.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 import TripsPage from "../pages/TripsPage.jsx";
+import NewTripPage from "../pages/NewTripPage.jsx";
+import EditTripPage from "../pages/EditTripPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
           {
             path: "trips/new",
             element: <NewTripPage />,
+          },
+          {
+            path: "trips/:tripId/edit",
+            element: <EditTripPage />,
           },
         ],
       },
