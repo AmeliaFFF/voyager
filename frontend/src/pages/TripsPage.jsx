@@ -13,28 +13,14 @@ import TripCard from "../components/TripCard.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { getErrorMessage } from "../utils/errorUtils.js";
 import { sortTripsByStatusAndDate } from "../utils/statusUtils.js";
+import { tripStatusOptions } from "../constants/tripConstants.js";
 
 const statusOptions = [
   {
     value: "all",
     label: "All statuses",
   },
-  {
-    value: "planned",
-    label: "Planned",
-  },
-  {
-    value: "booked",
-    label: "Booked",
-  },
-  {
-    value: "completed",
-    label: "Completed",
-  },
-  {
-    value: "cancelled",
-    label: "Cancelled",
-  },
+  ...tripStatusOptions,
 ];
 
 function TripsPage() {
@@ -162,6 +148,10 @@ function TripsPage() {
           sx={{
             display: "grid",
             gap: 2,
+            alignItems: "stretch",
+            gridAutoRows: {
+              md: "1fr",
+            },
             gridTemplateColumns: {
               xs: "1fr",
               md: "repeat(2, minmax(0, 1fr))",
