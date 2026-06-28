@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { deleteTrip, getTripById, updateTrip } from "../api/tripsApi.js";
 import ContentCard from "../components/ContentCard.jsx";
 import FeedbackMessage from "../components/FeedbackMessage.jsx";
@@ -17,6 +17,8 @@ function EditTripPage() {
   const navigate = useNavigate();
   const { tripId } = useParams();
   const { token } = useAuth();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo || "/trips";
 
   const [formData, setFormData] = useState(defaultTripFormData);
   const [loadErrorMessage, setLoadErrorMessage] = useState("");
@@ -102,7 +104,7 @@ function EditTripPage() {
 
     try {
       await updateTrip(token, tripId, buildTripPayload());
-      navigate("/trips");
+      navigate(returnTo);
     } catch (error) {
       setFormErrorMessage(getErrorMessage(error));
     } finally {
@@ -111,7 +113,7 @@ function EditTripPage() {
   }
 
   function handleCancel() {
-    navigate("/trips");
+    navigate(returnTo);
   }
 
   function handleStartDelete() {
