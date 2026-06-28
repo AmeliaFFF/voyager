@@ -86,6 +86,8 @@ describe("POST /trips/:tripId/items", () => {
         expect(response.body.data.status).toBe("booked");
         expect(response.body.data.title).toBe("Flight to Tokyo");
         expect(response.body.data.tripId).toBe(tripId);
+        expect(response.body.data.startDateTime).toBe("2026-09-01T10:00");
+        expect(response.body.data.endDateTime).toBe("2026-09-01T19:30");
     });
 
     it("should create a trip item with default planned status when status is omitted", async () => {
@@ -100,6 +102,7 @@ describe("POST /trips/:tripId/items", () => {
             .expect(201);
 
         expect(response.body.data.status).toBe("planned");
+        expect(response.body.data.startDateTime).toBe("2026-09-01T15:00");
     });
 
     it("should reject trip item creation without authentication", async () => {
@@ -126,7 +129,9 @@ describe("POST /trips/:tripId/items", () => {
             })
             .expect(400);
 
-        expect(response.body.message).toBe("Invalid trip item type. Type must be one of: flight, transport, accommodation, tour, cruise, activity, other.");
+        expect(response.body.message).toBe(
+            "Invalid trip item type. Type must be one of: flight, transport, accommodation, tour, cruise, activity, other."
+        );
     });
 
     it("should reject an invalid trip item status", async () => {
@@ -141,7 +146,74 @@ describe("POST /trips/:tripId/items", () => {
             })
             .expect(400);
 
-        expect(response.body.message).toBe("Invalid trip item status. Status must be one of: planned, booked, completed, cancelled.");
+        expect(response.body.message).toBe(
+            "Invalid trip item status. Status must be one of: planned, booked, completed, cancelled."
+        );
+    });
+
+    it("should reject startDateTime values with a timezone suffix", async () => {
+        const response = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-09-01T10:00Z"
+            })
+            .expect(400);
+
+        expect(response.body.message).toBe(
+            "startDateTime must be a valid local datetime in YYYY-MM-DDTHH:mm format."
+        );
+    });
+
+    it("should reject full ISO startDateTime values", async () => {
+        const response = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-09-01T10:00:00.000Z"
+            })
+            .expect(400);
+
+        expect(response.body.message).toBe(
+            "startDateTime must be a valid local datetime in YYYY-MM-DDTHH:mm format."
+        );
+    });
+
+    it("should reject impossible local datetimes", async () => {
+        const response = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-02-31T10:00"
+            })
+            .expect(400);
+
+        expect(response.body.message).toBe(
+            "startDateTime must be a valid local datetime in YYYY-MM-DDTHH:mm format."
+        );
+    });
+
+    it("should reject endDateTime before startDateTime", async () => {
+        const response = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-09-01T19:30",
+                endDateTime: "2026-09-01T10:00"
+            })
+            .expect(400);
+
+        expect(response.body.message).toBe(
+            "startDateTime must be before or equal to endDateTime."
+        );
     });
 });
 
@@ -162,9 +234,44 @@ describe("GET /trips/:tripId/items", () => {
             .set("Authorization", `Bearer ${authToken}`)
             .expect(200);
 
-        expect(response.body.message).toBe("Trip items retrieved successfully.");
+        expect(response.body.message).toBe(
+            "Trip items retrieved successfully."
+        );
         expect(response.body.data.tripItems.length).toBe(1);
         expect(response.body.data.tripItems[0].title).toBe("Flight to Tokyo");
+        expect(response.body.data.tripItems[0].startDateTime).toBe(
+            "2026-09-01T10:00"
+        );
+    });
+
+    it("should return trip items sorted by local startDateTime", async () => {
+        await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "activity",
+                title: "Evening activity",
+                startDateTime: "2026-09-01T20:00"
+            })
+            .expect(201);
+
+        await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "transport",
+                title: "Morning train",
+                startDateTime: "2026-09-01T08:30"
+            })
+            .expect(201);
+
+        const response = await request(app)
+            .get(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .expect(200);
+
+        expect(response.body.data.tripItems[0].title).toBe("Morning train");
+        expect(response.body.data.tripItems[1].title).toBe("Evening activity");
     });
 });
 
@@ -190,6 +297,7 @@ describe("GET /trip-items/:tripItemId", () => {
         expect(response.body.message).toBe("Trip item retrieved successfully.");
         expect(response.body.data.id).toBe(tripItemId);
         expect(response.body.data.title).toBe("Flight to Tokyo");
+        expect(response.body.data.startDateTime).toBe("2026-09-01T10:00");
     });
 
     it("should return 404 for an invalid trip item ID", async () => {
@@ -228,6 +336,85 @@ describe("PATCH /trip-items/:tripItemId", () => {
         expect(response.body.message).toBe("Trip item updated successfully.");
         expect(response.body.data.status).toBe("completed");
         expect(response.body.data.notes).toBe("Flight completed.");
+        expect(response.body.data.startDateTime).toBe("2026-09-01T10:00");
+    });
+
+    it("should update local datetime strings without timezone conversion", async () => {
+        const createResponse = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-09-01T10:00"
+            })
+            .expect(201);
+
+        const tripItemId = createResponse.body.data.id;
+
+        const response = await request(app)
+            .patch(`/trip-items/${tripItemId}`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                startDateTime: "2026-09-01T11:00",
+                endDateTime: "2026-09-01T20:30"
+            })
+            .expect(200);
+
+        expect(response.body.data.startDateTime).toBe("2026-09-01T11:00");
+        expect(response.body.data.endDateTime).toBe("2026-09-01T20:30");
+    });
+
+    it("should reject patched startDateTime values with a timezone suffix", async () => {
+        const createResponse = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-09-01T10:00"
+            })
+            .expect(201);
+
+        const tripItemId = createResponse.body.data.id;
+
+        const response = await request(app)
+            .patch(`/trip-items/${tripItemId}`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                startDateTime: "2026-09-01T10:00Z"
+            })
+            .expect(400);
+
+        expect(response.body.message).toBe(
+            "startDateTime must be a valid local datetime in YYYY-MM-DDTHH:mm format."
+        );
+    });
+
+    it("should reject patched endDateTime before startDateTime", async () => {
+        const createResponse = await request(app)
+            .post(`/trips/${tripId}/items`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                type: "flight",
+                title: "Flight to Tokyo",
+                startDateTime: "2026-09-01T10:00"
+            })
+            .expect(201);
+
+        const tripItemId = createResponse.body.data.id;
+
+        const response = await request(app)
+            .patch(`/trip-items/${tripItemId}`)
+            .set("Authorization", `Bearer ${authToken}`)
+            .send({
+                endDateTime: "2026-09-01T09:00"
+            })
+            .expect(400);
+
+        expect(response.body.message).toBe(
+            "startDateTime must be before or equal to endDateTime."
+        );
     });
 });
 

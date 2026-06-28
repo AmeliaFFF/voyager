@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
-const { tripItemTypeValues, tripItemStatusValues } = require("../utils/enumValues");
+const {
+    tripItemTypeValues,
+    tripItemStatusValues
+} = require("../utils/enumValues");
 
 const tripItemSchema = new mongoose.Schema(
     {
@@ -30,11 +33,11 @@ const tripItemSchema = new mongoose.Schema(
             trim: true
         },
         startDateTime: {
-            type: Date,
+            type: String,
             required: true
         },
         endDateTime: {
-            type: Date,
+            type: String,
             required: false
         },
         provider: {
