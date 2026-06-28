@@ -7,29 +7,23 @@ const prepareItineraryData = (payload) => {
         throw new Error("Trip data is required");
     }
 
-    // Check that tripItems is an array; if not, throw an error.    
+    // Check that tripItems is an array; if not, throw an error.
     if (!Array.isArray(tripItems)) {
         throw new Error("Trip items must be an array");
     }
 
-    // Sort tripItems by startDateTime.
-    const sortedTripItems = [...tripItems].sort((a, b) => {
-        // Convert startDateTime to Date objects for comparison.
-        const dateA = new Date(a.startDateTime);
-        const dateB = new Date(b.startDateTime);
-        // Sort in ascending order (earliest first).
-        return dateA - dateB;
-    })
+    // Sort local datetime strings chronologically.
+    // YYYY-MM-DDTHH:mm strings sort correctly without Date conversion.
+    const sortedTripItems = [...tripItems].sort((a, b) =>
+        a.startDateTime.localeCompare(b.startDateTime)
+    );
 
-    // Group tripItems by day.
+    // Group tripItems by the local date portion of startDateTime.
     const groupedTripItems = {};
-    
+
     for (let i = 0; i < sortedTripItems.length; i++) {
         const tripItem = sortedTripItems[i];
-        const date = new Date(tripItem.startDateTime);
-
-        // Create a date key in YYYY-MM-DD format using local date parts.
-        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const dateKey = tripItem.startDateTime.slice(0, 10);
 
         // If this date does not exist yet, create an empty array for it.
         if (!groupedTripItems[dateKey]) {
