@@ -13,7 +13,7 @@ function formatDate(dateValue) {
   }
 
   return new Intl.DateTimeFormat("en-AU", {
-    day: "2-digit",
+    day: "numeric",
     month: "short",
     year: "numeric",
   }).format(new Date(dateValue));

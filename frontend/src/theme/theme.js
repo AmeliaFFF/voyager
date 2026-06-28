@@ -22,8 +22,8 @@ const theme = createTheme({
         text: "#374151",
       },
       booked: {
-        background: "#CCFBF1",
-        text: "#115E59",
+        background: "#DBEAFE",
+        text: "#1E40AF",
       },
       completed: {
         background: "#DCFCE7",
@@ -33,6 +33,10 @@ const theme = createTheme({
         background: "#FEE2E2",
         text: "#991B1B",
       },
+    },
+    tripItemType: {
+      background: "#6B7280",
+      text: "#FFFFFF",
     },
     feedback: {
       error: {

@@ -7,6 +7,7 @@ import RegisterPage from "../pages/RegisterPage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import TripsPage from "../pages/TripsPage.jsx";
 import NewTripPage from "../pages/NewTripPage.jsx";
+import TripDetailPage from "../pages/TripDetailPage.jsx";
 import EditTripPage from "../pages/EditTripPage.jsx";
 
 const router = createBrowserRouter([
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
           {
             path: "trips/new",
             element: <NewTripPage />,
+          },
+          {
+            path: "trips/:tripId",
+            element: <TripDetailPage />,
           },
           {
             path: "trips/:tripId/edit",

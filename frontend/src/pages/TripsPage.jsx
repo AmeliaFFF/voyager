@@ -60,13 +60,13 @@ function TripsPage() {
 
   return (
     <Stack component="section" spacing={3} sx={{ width: "100%" }}>
-      <Box>
+      <Stack spacing={1}>
         <Typography component="h1" variant="h1">
           Trips
         </Typography>
 
         <Typography color="text.secondary">View and manage your travel plans.</Typography>
-      </Box>
+      </Stack>
 
       <Stack
         direction={{
