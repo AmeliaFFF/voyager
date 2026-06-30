@@ -1,5 +1,11 @@
+const fs = require("node:fs");
+const path = require("node:path");
 const PDFDocument = require("pdfkit");
 const { formatDate, formatTime } = require("../utils/dateUtils");
+
+const LOGO_PATH = path.join(__dirname, "../assets/voyager-logo.png");
+const LOGO_WIDTH = 110;
+const LOGO_HEIGHT = 45;
 
 // Helper function to capitalise the first letter of a string.
 const capitaliseFirstLetter = (value) => {
@@ -20,6 +26,31 @@ const getTimeLabels = (type) => {
     }
 };
 
+const addFirstPageHeader = (doc, tripTitle) => {
+    const top = doc.page.margins.top;
+    const left = doc.page.margins.left;
+    const right = doc.page.width - doc.page.margins.right;
+    const hasLogo = fs.existsSync(LOGO_PATH);
+
+    if (hasLogo) {
+        doc.image(LOGO_PATH, right - LOGO_WIDTH, top, {
+            fit: [LOGO_WIDTH, LOGO_HEIGHT]
+        });
+    }
+
+    const titleTop = hasLogo ? top + LOGO_HEIGHT + 24 : top;
+    const titleWidth = right - left;
+
+    doc.font("Helvetica-Bold")
+        .fontSize(22)
+        .text(`${tripTitle} Itinerary`, left, titleTop, {
+            width: titleWidth
+        });
+
+    doc.x = left;
+    doc.moveDown();
+};
+
 const generateItineraryPDF = (preparedData, response) => {
     const trip = preparedData.trip;
     const groupedTripItems = preparedData.groupedTripItems;
@@ -30,10 +61,7 @@ const generateItineraryPDF = (preparedData, response) => {
     // Pipe the PDF output directly into the response.
     doc.pipe(response);
 
-    // Add the main title.
-    doc.font("Helvetica-Bold").fontSize(22).text(`${trip.title} Itinerary`);
-    doc.moveDown();
-    doc.font("Helvetica");
+    addFirstPageHeader(doc, trip.title);
 
     // Add a basic trip summary section.
     doc.font("Helvetica-Bold").fontSize(18).text("Trip Summary");
@@ -63,7 +91,16 @@ const generateItineraryPDF = (preparedData, response) => {
     doc.font("Helvetica");
     doc.moveDown(0.5);
 
-    for (const dateKey in groupedTripItems) {
+    const itineraryDateKeys = Object.keys(groupedTripItems);
+
+    if (itineraryDateKeys.length === 0) {
+        doc.font("Helvetica")
+            .fontSize(13)
+            .text("No itinerary items have been added yet.");
+        doc.moveDown();
+    }
+
+    for (const dateKey of itineraryDateKeys) {
         doc.moveDown(0.5);
         doc.font("Helvetica-Bold").fontSize(16).text(formatDate(dateKey));
         doc.font("Helvetica");
@@ -95,18 +132,26 @@ const generateItineraryPDF = (preparedData, response) => {
             }
 
             if (tripItem.startDateTime) {
-                doc.text(`  ${labels.start}: ${formatDate(tripItem.startDateTime)}, ${formatTime(tripItem.startDateTime)}`);
+                doc.text(
+                    `  ${labels.start}: ${formatDate(tripItem.startDateTime)}, ${formatTime(tripItem.startDateTime)}`
+                );
             }
 
             if (tripItem.endDateTime) {
-                doc.text(`  ${labels.end}: ${formatDate(tripItem.endDateTime)}, ${formatTime(tripItem.endDateTime)}`);
+                doc.text(
+                    `  ${labels.end}: ${formatDate(tripItem.endDateTime)}, ${formatTime(tripItem.endDateTime)}`
+                );
             }
 
             if (tripItem.location) {
                 doc.text(`  Location: ${tripItem.location}`);
             }
 
-            if (tripItem.cost !== undefined && tripItem.cost !== null && tripItem.currencyCode) {
+            if (
+                tripItem.cost !== undefined &&
+                tripItem.cost !== null &&
+                tripItem.currencyCode
+            ) {
                 doc.text(`  Cost: ${tripItem.currencyCode} ${tripItem.cost}`);
             }
 

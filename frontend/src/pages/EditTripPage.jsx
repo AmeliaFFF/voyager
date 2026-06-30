@@ -184,7 +184,7 @@ function EditTripPage() {
                 }}
               >
                 <Box sx={{ flexGrow: 1 }}>
-                  <FeedbackMessage textAlign="center">
+                  <FeedbackMessage>
                     This will permanently delete this trip and its itinerary items.
                   </FeedbackMessage>
                 </Box>
