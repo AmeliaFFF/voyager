@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 
-function FeedbackMessage({ children, severity = "error", textAlign = "left" }) {
+function FeedbackMessage({ children, severity = "error", textAlign = "center" }) {
   return (
     <Box
       role="alert"

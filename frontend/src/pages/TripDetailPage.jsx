@@ -17,6 +17,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import { getErrorMessage } from "../utils/errorUtils.js";
 import { formatStatusLabel } from "../utils/statusUtils.js";
 import { formatLocalDate, groupTripItemsByDate } from "../utils/tripItemUtils.js";
+import { exportTripItinerary } from "../api/exportApi.js";
 
 const typeFilterOptions = [
   {
@@ -50,6 +51,16 @@ function formatBudget(trip) {
   return `${trip.currencyCode || "AUD"} ${Number(trip.budget).toLocaleString("en-AU")}`;
 }
 
+function createItineraryFileName(trip) {
+  const safeTitle = trip.title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+
+  return `${safeTitle || "trip"}-itinerary.pdf`;
+}
+
 function TripDetailPage() {
   const { tripId } = useParams();
   const { token } = useAuth();
@@ -60,6 +71,33 @@ function TripDetailPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [exportErrorMessage, setExportErrorMessage] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
+
+  async function handleExportItinerary() {
+    setIsExporting(true);
+    setExportErrorMessage("");
+
+    try {
+      const pdfBlob = await exportTripItinerary(token, trip.id);
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = pdfUrl;
+      downloadLink.download = createItineraryFileName(trip);
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 1000);
+    } catch (error) {
+      setExportErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   const filteredTripItems = useMemo(() => {
     return tripItems.filter((tripItem) => {
@@ -174,7 +212,6 @@ function TripDetailPage() {
               <Typography component="h2" variant="h2">
                 {trip.title}
               </Typography>
-
               <Box
                 sx={{
                   display: "grid",
@@ -239,7 +276,6 @@ function TripDetailPage() {
                   </>
                 ) : null}
               </Box>
-
               <Stack
                 direction={{
                   xs: "column",
@@ -260,10 +296,16 @@ function TripDetailPage() {
                   Edit trip
                 </Button>
 
-                <Button fullWidth variant="outlined">
-                  Export PDF
+                <Button
+                  fullWidth
+                  disabled={isExporting}
+                  onClick={handleExportItinerary}
+                  variant="outlined"
+                >
+                  {isExporting ? "Exporting PDF..." : "Export PDF"}
                 </Button>
               </Stack>
+              {exportErrorMessage ? <FeedbackMessage>{exportErrorMessage}</FeedbackMessage> : null}
             </Stack>
           </ContentCard>
 
