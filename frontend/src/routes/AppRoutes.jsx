@@ -9,6 +9,8 @@ import TripsPage from "../pages/TripsPage.jsx";
 import NewTripPage from "../pages/NewTripPage.jsx";
 import TripDetailPage from "../pages/TripDetailPage.jsx";
 import EditTripPage from "../pages/EditTripPage.jsx";
+import NewTripItemPage from "../pages/NewTripItemPage.jsx";
+import EditTripItemPage from "../pages/EditTripItemPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +48,14 @@ const router = createBrowserRouter([
           {
             path: "trips/:tripId/edit",
             element: <EditTripPage />,
+          },
+          {
+            path: "trips/:tripId/items/new",
+            element: <NewTripItemPage />,
+          },
+          {
+            path: "trips/:tripId/items/:tripItemId/edit",
+            element: <EditTripItemPage />,
           },
         ],
       },

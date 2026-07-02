@@ -6,7 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { getTripItems } from "../api/tripItemsApi.js";
 import { getTripById } from "../api/tripsApi.js";
 import ContentCard from "../components/ContentCard.jsx";
@@ -64,11 +64,16 @@ function createItineraryFileName(trip) {
 function TripDetailPage() {
   const { tripId } = useParams();
   const { token } = useAuth();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const returnTo = `${location.pathname}${location.search}`;
+  const backToTrips = location.state?.returnTo || "/trips";
 
   const [trip, setTrip] = useState(null);
   const [tripItems, setTripItems] = useState([]);
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const typeFilter = searchParams.get("type") || "all";
+  const statusFilter = searchParams.get("status") || "all";
+  const hasActiveFilters = typeFilter !== "all" || statusFilter !== "all";
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [exportErrorMessage, setExportErrorMessage] = useState("");
@@ -138,11 +143,42 @@ function TripDetailPage() {
   }, [token, tripId]);
 
   function handleTypeFilterChange(event) {
-    setTypeFilter(event.target.value);
+    const nextTypeFilter = event.target.value;
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (nextTypeFilter === "all") {
+      nextSearchParams.delete("type");
+    } else {
+      nextSearchParams.set("type", nextTypeFilter);
+    }
+
+    setSearchParams(nextSearchParams, {
+      state: location.state,
+    });
   }
 
   function handleStatusFilterChange(event) {
-    setStatusFilter(event.target.value);
+    const nextStatusFilter = event.target.value;
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (nextStatusFilter === "all") {
+      nextSearchParams.delete("status");
+    } else {
+      nextSearchParams.set("status", nextStatusFilter);
+    }
+
+    setSearchParams(nextSearchParams, {
+      state: location.state,
+    });
+  }
+
+  function handleClearFilters() {
+    setSearchParams(
+      {},
+      {
+        state: location.state,
+      },
+    );
   }
 
   return (
@@ -179,7 +215,7 @@ function TripDetailPage() {
 
         <Button
           component={RouterLink}
-          to="/trips"
+          to={backToTrips}
           variant="outlined"
           sx={{
             minHeight: 44,
@@ -272,7 +308,14 @@ function TripDetailPage() {
                     >
                       Notes:
                     </Typography>
-                    <Typography color="text.secondary">{trip.notes}</Typography>
+                    <Typography
+                      color="text.secondary"
+                      sx={{
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {trip.notes}
+                    </Typography>
                   </>
                 ) : null}
               </Box>
@@ -290,7 +333,7 @@ function TripDetailPage() {
                   fullWidth
                   component={RouterLink}
                   to={`/trips/${trip.id}/edit`}
-                  state={{ returnTo: `/trips/${trip.id}` }}
+                  state={{ returnTo, backToTrips }}
                   variant="outlined"
                 >
                   Edit trip
@@ -382,6 +425,7 @@ function TripDetailPage() {
               <Button
                 component={RouterLink}
                 to={`/trips/${trip.id}/items/new`}
+                state={{ returnTo, backToTrips }}
                 variant="contained"
                 sx={{
                   minHeight: 56,
@@ -399,6 +443,27 @@ function TripDetailPage() {
               >
                 Add itinerary item
               </Button>
+
+              {hasActiveFilters ? (
+                <Button
+                  onClick={handleClearFilters}
+                  variant="outlined"
+                  sx={{
+                    minHeight: 56,
+                    px: 3,
+                    order: {
+                      xs: 4,
+                      sm: 4,
+                    },
+                    alignSelf: {
+                      xs: "stretch",
+                      sm: "center",
+                    },
+                  }}
+                >
+                  Clear filters
+                </Button>
+              ) : null}
             </Stack>
 
             {filteredTripItems.length === 0 ? (

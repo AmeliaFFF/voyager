@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { formatStatusLabel } from "../utils/statusUtils.js";
 import ContentCard from "./ContentCard.jsx";
 
@@ -28,6 +28,8 @@ function formatBudget(trip) {
 }
 
 function TripCard({ trip }) {
+  const location = useLocation();
+  const returnTo = `${location.pathname}${location.search}`;
   return (
     <ContentCard
       sx={{
@@ -164,11 +166,23 @@ function TripCard({ trip }) {
             mt: "auto",
           }}
         >
-          <Button fullWidth component={RouterLink} to={`/trips/${trip.id}`} variant="outlined">
+          <Button
+            fullWidth
+            component={RouterLink}
+            to={`/trips/${trip.id}`}
+            state={{ returnTo }}
+            variant="outlined"
+          >
             View trip
           </Button>
 
-          <Button fullWidth component={RouterLink} to={`/trips/${trip.id}/edit`} variant="outlined">
+          <Button
+            fullWidth
+            component={RouterLink}
+            to={`/trips/${trip.id}/edit`}
+            state={{ returnTo }}
+            variant="outlined"
+          >
             Edit trip
           </Button>
         </Stack>
