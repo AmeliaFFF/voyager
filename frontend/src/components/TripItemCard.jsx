@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import ContentCard from "./ContentCard.jsx";
 import { formatLocalDateTime, formatTripItemLabel } from "../utils/tripItemUtils.js";
 
@@ -37,6 +37,9 @@ function formatCost(tripItem) {
 }
 
 function TripItemCard({ tripItem }) {
+  const location = useLocation();
+  const returnTo = `${location.pathname}${location.search}`;
+  const backToTrips = location.state?.returnTo;
   const timeLabels = getTimeLabels(tripItem.type);
   const formattedCost = formatCost(tripItem);
 
@@ -126,14 +129,12 @@ function TripItemCard({ tripItem }) {
             </>
           ) : null}
 
-          {tripItem.endDateTime ? (
-            <>
-              <Typography component="span" color="text.secondary" sx={{ fontWeight: 700 }}>
-                {timeLabels.end}:
-              </Typography>
-              <Typography>{formatLocalDateTime(tripItem.endDateTime)}</Typography>
-            </>
-          ) : null}
+          <Typography component="span" color="text.secondary" sx={{ fontWeight: 700 }}>
+            {timeLabels.end}:
+          </Typography>
+          <Typography>
+            {tripItem.endDateTime ? formatLocalDateTime(tripItem.endDateTime) : "Not set"}
+          </Typography>
 
           {tripItem.location ? (
             <>
@@ -172,19 +173,31 @@ function TripItemCard({ tripItem }) {
           ) : null}
 
           {tripItem.notes ? (
-            <>
-              <Typography
-                component="span"
-                color="text.secondary"
-                sx={{
-                  alignSelf: "start",
-                  fontWeight: 700,
-                }}
-              >
+            <Box
+              sx={{
+                display: "grid",
+                gridColumn: "1 / -1",
+                gridTemplateColumns: {
+                  xs: "5.25rem minmax(0, 1fr)",
+                  md: "7rem minmax(0, 1fr)",
+                },
+                columnGap: 1.5,
+                alignItems: "start",
+              }}
+            >
+              <Typography component="span" color="text.secondary" sx={{ fontWeight: 700 }}>
                 Notes:
               </Typography>
-              <Typography color="text.secondary">{tripItem.notes}</Typography>
-            </>
+
+              <Typography
+                color="text.secondary"
+                sx={{
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {tripItem.notes}
+              </Typography>
+            </Box>
           ) : null}
         </Box>
 
@@ -193,6 +206,7 @@ function TripItemCard({ tripItem }) {
             fullWidth
             component={RouterLink}
             to={`/trips/${tripItem.tripId}/items/${tripItem.id}/edit`}
+            state={{ returnTo, backToTrips }}
             variant="outlined"
           >
             Edit item

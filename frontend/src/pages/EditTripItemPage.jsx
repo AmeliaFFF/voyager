@@ -1,53 +1,66 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { deleteTrip, getTripById, updateTrip } from "../api/tripsApi.js";
+import { deleteTripItem, getTripItemById, updateTripItem } from "../api/tripItemsApi.js";
 import ContentCard from "../components/ContentCard.jsx";
 import FeedbackMessage from "../components/FeedbackMessage.jsx";
-import TripForm from "../components/TripForm.jsx";
-import { defaultTripFormData } from "../constants/tripConstants.js";
+import TripItemForm from "../components/TripItemForm.jsx";
+import { defaultTripItemFormData } from "../constants/tripItemConstants.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { getErrorMessage } from "../utils/errorUtils.js";
-import { formatApiDateForInput, validateTripForm } from "../utils/tripValidation.js";
+import { formatApiDateTimeForInput, validateTripItemForm } from "../utils/tripItemValidation.js";
 
-function EditTripPage() {
+function EditTripItemPage() {
   const navigate = useNavigate();
-  const { tripId } = useParams();
+  const { tripId, tripItemId } = useParams();
   const { token } = useAuth();
   const location = useLocation();
-  const returnTo = location.state?.returnTo || "/trips";
+  const returnTo = location.state?.returnTo || `/trips/${tripId}`;
   const backToTrips = location.state?.backToTrips;
 
-  const [formData, setFormData] = useState(defaultTripFormData);
+  const [formData, setFormData] = useState(defaultTripItemFormData);
   const [loadErrorMessage, setLoadErrorMessage] = useState("");
   const [formErrorMessage, setFormErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const formErrorMessageRef = useRef(null);
 
   useEffect(() => {
-    async function loadTrip() {
+    if (formErrorMessage) {
+      formErrorMessageRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [formErrorMessage]);
+
+  useEffect(() => {
+    async function loadTripItem() {
       setIsLoading(true);
       setLoadErrorMessage("");
       setFormErrorMessage("");
 
       try {
-        const response = await getTripById(token, tripId);
-        const trip = response.data;
+        const response = await getTripItemById(token, tripItemId);
+        const tripItem = response.data;
 
         setFormData({
-          title: trip.title || "",
-          destination: trip.destination || "",
-          startDate: formatApiDateForInput(trip.startDate),
-          endDate: formatApiDateForInput(trip.endDate),
-          status: trip.status || "planned",
-          budget: trip.budget === null || trip.budget === undefined ? "" : String(trip.budget),
-          currencyCode: trip.currencyCode || "",
-          notes: trip.notes || "",
+          type: tripItem.type || "",
+          status: tripItem.status || "planned",
+          title: tripItem.title || "",
+          location: tripItem.location || "",
+          startDateTime: formatApiDateTimeForInput(tripItem.startDateTime),
+          endDateTime: formatApiDateTimeForInput(tripItem.endDateTime),
+          provider: tripItem.provider || "",
+          bookingReference: tripItem.bookingReference || "",
+          cost: tripItem.cost === null || tripItem.cost === undefined ? "" : String(tripItem.cost),
+          currencyCode: tripItem.currencyCode || "AUD",
+          notes: tripItem.notes || "",
         });
       } catch (error) {
         setLoadErrorMessage(getErrorMessage(error));
@@ -56,8 +69,8 @@ function EditTripPage() {
       }
     }
 
-    loadTrip();
-  }, [token, tripId]);
+    loadTripItem();
+  }, [token, tripItemId]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -77,20 +90,23 @@ function EditTripPage() {
     }));
   }
 
-  function buildTripPayload() {
+  function buildTripItemPayload() {
     return {
-      title: formData.title.trim(),
-      destination: formData.destination.trim(),
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      type: formData.type,
       status: formData.status,
+      title: formData.title.trim(),
+      location: formData.location.trim(),
+      startDateTime: formData.startDateTime,
+      endDateTime: formData.endDateTime,
+      provider: formData.provider.trim(),
+      bookingReference: formData.bookingReference.trim(),
+      cost: formData.cost === "" ? null : Number(formData.cost),
+      currencyCode: formData.currencyCode.trim(),
       notes: formData.notes.trim(),
-      budget: formData.budget === "" ? undefined : Number(formData.budget),
-      currencyCode: formData.currencyCode.trim() || undefined,
     };
   }
 
-  function navigateBack() {
+  function navigateBackToTripDetail() {
     navigate(returnTo, {
       state: backToTrips ? { returnTo: backToTrips } : undefined,
     });
@@ -100,7 +116,7 @@ function EditTripPage() {
     event.preventDefault();
     setFormErrorMessage("");
 
-    const validationMessage = validateTripForm(formData);
+    const validationMessage = validateTripItemForm(formData);
 
     if (validationMessage) {
       setFormErrorMessage(validationMessage);
@@ -110,8 +126,8 @@ function EditTripPage() {
     setIsSubmitting(true);
 
     try {
-      await updateTrip(token, tripId, buildTripPayload());
-      navigateBack();
+      await updateTripItem(token, tripItemId, buildTripItemPayload());
+      navigateBackToTripDetail();
     } catch (error) {
       setFormErrorMessage(getErrorMessage(error));
     } finally {
@@ -120,7 +136,7 @@ function EditTripPage() {
   }
 
   function handleCancel() {
-    navigateBack();
+    navigateBackToTripDetail();
   }
 
   function handleStartDelete() {
@@ -137,8 +153,8 @@ function EditTripPage() {
     setIsDeleting(true);
 
     try {
-      await deleteTrip(token, tripId);
-      navigate("/trips");
+      await deleteTripItem(token, tripItemId);
+      navigateBackToTripDetail();
     } catch (error) {
       setFormErrorMessage(getErrorMessage(error));
       setIsDeleting(false);
@@ -150,21 +166,28 @@ function EditTripPage() {
     <Stack component="section" spacing={3}>
       <Stack spacing={1}>
         <Typography component="h1" variant="h1">
-          Edit trip
+          Edit itinerary item
         </Typography>
 
-        <Typography color="text.secondary">Update the main details for this trip.</Typography>
+        <Typography color="text.secondary">
+          Update or delete an itinerary item linked to this trip.
+        </Typography>
       </Stack>
 
       {loadErrorMessage ? <FeedbackMessage>{loadErrorMessage}</FeedbackMessage> : null}
 
-      {isLoading ? <Typography>Loading trip...</Typography> : null}
+      {isLoading ? <Typography>Loading itinerary item...</Typography> : null}
 
       {!isLoading && !loadErrorMessage ? (
         <ContentCard>
           <Stack spacing={3}>
-            {formErrorMessage ? <FeedbackMessage>{formErrorMessage}</FeedbackMessage> : null}
-            <TripForm
+            {formErrorMessage ? (
+              <Box ref={formErrorMessageRef}>
+                <FeedbackMessage>{formErrorMessage}</FeedbackMessage>
+              </Box>
+            ) : null}
+
+            <TripItemForm
               formData={formData}
               isSubmitting={isSubmitting}
               onCancel={handleCancel}
@@ -192,7 +215,7 @@ function EditTripPage() {
               >
                 <Box sx={{ flexGrow: 1 }}>
                   <FeedbackMessage>
-                    This will permanently delete this trip and its itinerary items.
+                    This will permanently delete this itinerary item.
                   </FeedbackMessage>
                 </Box>
 
@@ -248,4 +271,4 @@ function EditTripPage() {
   );
 }
 
-export default EditTripPage;
+export default EditTripItemPage;

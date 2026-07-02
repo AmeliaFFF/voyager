@@ -14,3 +14,17 @@ export const tripItemStatusOptions = [
   { value: "completed", label: "Completed" },
   { value: "cancelled", label: "Cancelled" },
 ];
+
+export const defaultTripItemFormData = {
+  type: "",
+  status: "planned",
+  title: "",
+  location: "",
+  startDateTime: "",
+  endDateTime: "",
+  provider: "",
+  bookingReference: "",
+  cost: "",
+  currencyCode: "AUD",
+  notes: "",
+};

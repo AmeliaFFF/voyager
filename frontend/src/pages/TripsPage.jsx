@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import { getTrips } from "../api/tripsApi.js";
 import ContentCard from "../components/ContentCard.jsx";
 import FeedbackMessage from "../components/FeedbackMessage.jsx";
@@ -27,7 +27,9 @@ function TripsPage() {
   const { token } = useAuth();
 
   const [trips, setTrips] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") || "all";
+  const hasActiveFilters = statusFilter !== "all";
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,7 +57,20 @@ function TripsPage() {
   }, [statusFilter, token]);
 
   function handleStatusFilterChange(event) {
-    setStatusFilter(event.target.value);
+    const nextStatusFilter = event.target.value;
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (nextStatusFilter === "all") {
+      nextSearchParams.delete("status");
+    } else {
+      nextSearchParams.set("status", nextStatusFilter);
+    }
+
+    setSearchParams(nextSearchParams);
+  }
+
+  function handleClearFilters() {
+    setSearchParams({});
   }
 
   return (
@@ -125,6 +140,27 @@ function TripsPage() {
         >
           Create trip
         </Button>
+
+        {hasActiveFilters ? (
+          <Button
+            onClick={handleClearFilters}
+            variant="outlined"
+            sx={{
+              minHeight: 56,
+              px: 3,
+              order: {
+                xs: 3,
+                sm: 3,
+              },
+              alignSelf: {
+                xs: "stretch",
+                sm: "center",
+              },
+            }}
+          >
+            Clear filters
+          </Button>
+        ) : null}
       </Stack>
 
       {errorMessage ? <FeedbackMessage>{errorMessage}</FeedbackMessage> : null}
