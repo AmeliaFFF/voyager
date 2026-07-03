@@ -14,6 +14,7 @@ The API supports:
 - JWT authentication.
 - Trip CRUD functionality.
 - Trip item CRUD functionality.
+- Trip and trip item filtering.
 - Admin-only support routes.
 - PDF itinerary export.
 - Development database seed and wipe scripts.
@@ -33,21 +34,19 @@ A user can have many trips, and each trip can have many trip items. TripItems be
 
 ## Technologies Used
 
-## Technologies Used
-
-| Technology | Purpose in this project | Industry relevance | Alternative considered | Licence |
-| --- | --- | --- | --- | --- |
-| Node.js | Runs the backend JavaScript application. | Node.js is commonly used for web servers and APIs, especially in JavaScript full-stack applications. It is also relevant to MERN projects because JavaScript can be used across both the backend and frontend. | Python with Flask could also be used, but Node.js fits the MERN stack and allows JavaScript to be used across the backend and frontend. | MIT |
-| Express | Creates the API routes and middleware. | Express is widely used for Node.js APIs and is a common choice for REST-style backend applications. Its middleware pattern also makes it useful for authentication, logging, validation, and error handling. | NestJS and Fastify are also popular Node.js backend options. Express was chosen because it is lightweight, flexible, and well suited to building a REST-style API without adding more structure than this project needs. | MIT |
-| MongoDB | Stores users, trips, and trip items as documents. | MongoDB is commonly used in MERN applications and works well with JSON-like data. It is relevant for applications where data can be stored as flexible documents. | PostgreSQL could also be used, but MongoDB was chosen because it fits the MERN stack and works naturally with JSON-like data. | SSPL for MongoDB Community Server |
-| Mongoose | Defines schemas, validation rules, and database models. | Mongoose is commonly used with MongoDB in Node.js applications because it adds a schema and model layer on top of MongoDB. This helps make database interactions more consistent and easier to maintain. | The native MongoDB driver could be used, but Mongoose provides clearer structure and model-level validation. | MIT |
-| JSON Web Token | Authenticates users and protects private routes. | JWTs are commonly used in API authentication, especially when the frontend and backend are separate applications. Bearer tokens are a standard way to send authentication details with protected API requests. | Session-based authentication could also be used, but JWT works well for a separate frontend and backend API. | MIT |
-| Node crypto | Hashes and verifies user passwords with a unique salt. | Secure password handling is an important requirement in backend development. Node's built-in crypto module provides cryptographic functionality without needing an extra package. | bcrypt is another common option, but Node's built-in crypto module was sufficient for this project. | Part of Node.js |
-| Helmet | Adds security-related HTTP headers. | Helmet is commonly used in Express applications to improve security by setting safer HTTP headers. This is relevant because backend APIs should reduce avoidable security risks where possible. | Headers could be manually configured, but Helmet is clearer and less error-prone. | MIT |
-| CORS | Controls which frontend origins can access the API from a browser. | CORS configuration is important in modern web applications where the frontend and backend may run on different origins. It helps control which browser-based clients can access the API. | CORS headers could be manually configured, but the `cors` package is simpler and more maintainable. | MIT |
-| PDFKit | Generates downloadable PDF itinerary files. | PDF generation is useful for applications that need exports, reports, invoices, or downloadable documents. In Voyager, it adds a practical itinerary export feature beyond basic CRUD functionality. | Puppeteer could generate PDFs from HTML, but PDFKit is lighter and more suitable for this backend feature. | MIT |
-| Jest | Runs automated backend tests. | Automated testing is important in professional software development because it helps confirm that existing functionality still works after changes. Jest is widely used in JavaScript projects for unit and integration testing. | Vitest is another option and will be used for frontend React testing. Jest was chosen as the backend testing tool because it works well with Supertest for Express route testing. | MIT |
-| Supertest | Sends test HTTP requests to the Express app. | Supertest is useful for testing backend API routes because it can check status codes, response bodies, headers, and authentication behaviour without manually starting the server. | Bruno or Postman are useful for manual testing, but Supertest is better for repeatable automated tests. | MIT |
+| Technology     | Purpose in this project                                            | Industry relevance                                                                                                                                                                                                               | Alternative considered                                                                                                                                                                                                   | Licence                           |
+| -------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| Node.js        | Runs the backend JavaScript application.                           | Node.js is commonly used for web servers and APIs, especially in JavaScript full-stack applications. It is also relevant to MERN projects because JavaScript can be used across both the backend and frontend.                   | Python with Flask could also be used, but Node.js fits the MERN stack and allows JavaScript to be used across the backend and frontend.                                                                                  | MIT                               |
+| Express        | Creates the API routes and middleware.                             | Express is widely used for Node.js APIs and is a common choice for REST-style backend applications. Its middleware pattern also makes it useful for authentication, logging, validation, and error handling.                     | NestJS and Fastify are also popular Node.js backend options. Express was chosen because it is lightweight, flexible, and well suited to building a REST-style API without adding more structure than this project needs. | MIT                               |
+| MongoDB        | Stores users, trips, and trip items as documents.                  | MongoDB is commonly used in MERN applications and works well with JSON-like data. It is relevant for applications where data can be stored as flexible documents.                                                                | PostgreSQL could also be used, but MongoDB was chosen because it fits the MERN stack and works naturally with JSON-like data.                                                                                            | SSPL for MongoDB Community Server |
+| Mongoose       | Defines schemas, validation rules, and database models.            | Mongoose is commonly used with MongoDB in Node.js applications because it adds a schema and model layer on top of MongoDB. This helps make database interactions more consistent and easier to maintain.                         | The native MongoDB driver could be used, but Mongoose provides clearer structure and model-level validation.                                                                                                             | MIT                               |
+| JSON Web Token | Authenticates users and protects private routes.                   | JWTs are commonly used in API authentication, especially when the frontend and backend are separate applications. Bearer tokens are a standard way to send authentication details with protected API requests.                   | Session-based authentication could also be used, but JWT works well for a separate frontend and backend API.                                                                                                             | MIT                               |
+| Node crypto    | Hashes and verifies user passwords with a unique salt.             | Secure password handling is an important requirement in backend development. Node's built-in crypto module provides cryptographic functionality without needing an extra package.                                                | bcrypt is another common option, but Node's built-in crypto module was sufficient for this project.                                                                                                                      | Part of Node.js                   |
+| Helmet         | Adds security-related HTTP headers.                                | Helmet is commonly used in Express applications to improve security by setting safer HTTP headers. This is relevant because backend APIs should reduce avoidable security risks where possible.                                  | Headers could be manually configured, but Helmet is clearer and less error-prone.                                                                                                                                        | MIT                               |
+| CORS           | Controls which frontend origins can access the API from a browser. | CORS configuration is important in modern web applications where the frontend and backend may run on different origins. It helps control which browser-based clients can access the API.                                         | CORS headers could be manually configured, but the `cors` package is simpler and more maintainable.                                                                                                                      | MIT                               |
+| PDFKit         | Generates downloadable PDF itinerary files.                        | PDF generation is useful for applications that need exports, reports, invoices, or downloadable documents. In Voyager, it adds a practical itinerary export feature beyond basic CRUD functionality.                             | Puppeteer could generate PDFs from HTML, but PDFKit is lighter and more suitable for this backend feature.                                                                                                               | MIT                               |
+| Jest           | Runs automated backend tests.                                      | Automated testing is important in professional software development because it helps confirm that existing functionality still works after changes. Jest is widely used in JavaScript projects for unit and integration testing. | Vitest is another option and is used for Voyager's frontend React testing. Jest was chosen as the backend testing tool because it works well with Supertest for Express route testing.                                   | MIT                               |
+| Supertest      | Sends test HTTP requests to the Express app.                       | Supertest is useful for testing backend API routes because it can check status codes, response bodies, headers, and authentication behaviour without manually starting the server.                                               | Bruno or Postman are useful for manual testing, but Supertest is better for repeatable automated tests.                                                                                                                  | MIT                               |
 
 ## Hardware and Software Requirements
 
@@ -88,6 +87,7 @@ DRY principles are applied through:
 - Admin middleware.
 - Request logging middleware.
 - Shared database connection helper.
+- Reusable date and local date-time utilities.
 - Development database seed and wipe scripts.
 
 Some response formatting helpers are kept inside route files where that keeps the code easier to read and avoids unnecessary abstraction.
@@ -98,8 +98,10 @@ Some response formatting helpers are kept inside route files where that keeps th
 voyager/
 ├── backend/
 │   ├── docs/
-│   │   ├── VoyagerERD.png
+│   │   └── VoyagerERD.png
 │   ├── src/
+│   │   ├── assets/
+│   │   │   └── voyager-logo.png
 │   │   ├── controllers/
 │   │   │   ├── AdminRoutes.js
 │   │   │   ├── AuthRoutes.js
@@ -126,7 +128,8 @@ voyager/
 │   │   │   ├── dateUtils.js
 │   │   │   ├── enumValidation.js
 │   │   │   ├── enumValues.js
-│   │   │   └── jwtFunctions.js
+│   │   │   ├── jwtFunctions.js
+│   │   │   └── localDateTimeUtils.js
 │   │   ├── app.js
 │   │   └── server.js
 │   ├── tests/
@@ -136,7 +139,8 @@ voyager/
 │   │   └── tripRoutes.test.js
 │   ├── .env.example
 │   ├── package-lock.json
-│   └── package.json
+│   ├── package.json
+│   └── README.md
 ├── bruno/
 ├── frontend/
 ├── .gitignore
@@ -148,12 +152,14 @@ voyager/
 ### 1. Clone the repository
 
 SSH:
+
 ```bash
 git clone git@github.com:AmeliaFFF/voyager.git
 cd voyager/backend
 ```
 
 HTTPS:
+
 ```bash
 git clone https://github.com/AmeliaFFF/voyager.git
 cd voyager/backend
@@ -197,24 +203,24 @@ http://localhost:3000
 
 ## Environment Variables
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `PORT` | No | Port used by the Express server. Defaults to `3000` if not provided. |
-| `JWT_SECRET_KEY` | Yes | Secret key used to sign and verify JWTs. |
-| `DATABASE_URL` | Yes | MongoDB connection string used by Mongoose. |
+| Variable         | Required | Purpose                                                              |
+| ---------------- | -------- | -------------------------------------------------------------------- |
+| `PORT`           | No       | Port used by the Express server. Defaults to `3000` if not provided. |
+| `JWT_SECRET_KEY` | Yes      | Secret key used to sign and verify JWTs.                             |
+| `DATABASE_URL`   | Yes      | MongoDB connection string used by Mongoose.                          |
 
 ## Available Scripts
 
-| Script | Purpose |
-| --- | --- |
-| `npm start` | Starts the server using Node. |
-| `npm run dev:watch` | Starts the server in watch mode for development. |
-| `npm run setup:env` | Runs the local environment setup script. |
-| `npm run dev:db:seed` | Seeds the development database with sample data. |
-| `npm run dev:db:wipe` | Drops the current development database. |
-| `npm run dev:db:wipe-and-seed` | Drops and reseeds the development database. |
-| `npm test` | Runs the Jest and Supertest test suites. |
-| `npm run test:coverage` | Runs tests with coverage reporting. |
+| Script                         | Purpose                                          |
+| ------------------------------ | ------------------------------------------------ |
+| `npm start`                    | Starts the server using Node.                    |
+| `npm run dev:watch`            | Starts the server in watch mode for development. |
+| `npm run setup:env`            | Runs the local environment setup script.         |
+| `npm run dev:db:seed`          | Seeds the development database with sample data. |
+| `npm run dev:db:wipe`          | Drops the current development database.          |
+| `npm run dev:db:wipe-and-seed` | Drops and reseeds the development database.      |
+| `npm test`                     | Runs the Jest and Supertest test suites.         |
+| `npm run test:coverage`        | Runs tests with coverage reporting.              |
 
 ## Development Seed Data
 
@@ -222,10 +228,10 @@ The seed script creates sample users, trips, and trip items for local developmen
 
 Seed users:
 
-| User | Email | Password | Admin |
-| --- | --- | --- | --- |
-| Regular seed user | `seed.regular@example.com` | `Password123` | No |
-| Admin seed user | `seed.admin@example.com` | `Password123` | Yes |
+| User              | Email                      | Password      | Admin |
+| ----------------- | -------------------------- | ------------- | ----- |
+| Regular seed user | `seed.regular@example.com` | `Password123` | No    |
+| Admin seed user   | `seed.admin@example.com`   | `Password123` | Yes   |
 
 The seed data includes:
 
@@ -303,21 +309,21 @@ http://localhost:3000
 
 ### Authentication routes
 
-| Method | Endpoint | Purpose | Auth |
-| --- | --- | --- | --- |
-| POST | `/auth/register` | Registers a new user account. | No |
-| POST | `/auth/login` | Logs in a user and returns a JWT. | No |
-| GET | `/auth/me` | Returns the currently authenticated user. | Yes |
+| Method | Endpoint         | Purpose                                   | Auth |
+| ------ | ---------------- | ----------------------------------------- | ---- |
+| POST   | `/auth/register` | Registers a new user account.             | No   |
+| POST   | `/auth/login`    | Logs in a user and returns a JWT.         | No   |
+| GET    | `/auth/me`       | Returns the currently authenticated user. | Yes  |
 
 ### Trip routes
 
-| Method | Endpoint | Purpose | Auth |
-| --- | --- | --- | --- |
-| POST | `/trips` | Creates a new trip for the authenticated user. | Yes |
-| GET | `/trips` | Returns all trips for the authenticated user. Supports optional status filtering using allowed trip status values, for example `?status=booked` | Yes |
-| GET | `/trips/:tripId` | Returns one trip owned by the authenticated user. | Yes |
-| PATCH | `/trips/:tripId` | Updates one trip owned by the authenticated user. | Yes |
-| DELETE | `/trips/:tripId` | Deletes one trip owned by the authenticated user. | Yes |
+| Method | Endpoint         | Purpose                                                                                                                                         | Auth |
+| ------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| POST   | `/trips`         | Creates a new trip for the authenticated user.                                                                                                  | Yes  |
+| GET    | `/trips`         | Returns all trips for the authenticated user. Supports optional status filtering using allowed trip status values, for example `?status=booked` | Yes  |
+| GET    | `/trips/:tripId` | Returns one trip owned by the authenticated user.                                                                                               | Yes  |
+| PATCH  | `/trips/:tripId` | Updates one trip owned by the authenticated user.                                                                                               | Yes  |
+| DELETE | `/trips/:tripId` | Deletes one trip owned by the authenticated user.                                                                                               | Yes  |
 
 Allowed trip status values:
 
@@ -327,13 +333,13 @@ planned, booked, completed, cancelled
 
 ### Trip item routes
 
-| Method | Endpoint | Purpose | Auth |
-| --- | --- | --- | --- |
-| POST | `/trips/:tripId/items` | Creates a new trip item inside a trip. | Yes |
-| GET | `/trips/:tripId/items` | Returns all trip items for a trip. Supports optional filtering by allowed trip item type or status values, for example `?type=flight` or `?status=booked` | Yes |
-| GET | `/trip-items/:tripItemId` | Returns one trip item if the parent trip belongs to the authenticated user. | Yes |
-| PATCH | `/trip-items/:tripItemId` | Updates one trip item if the parent trip belongs to the authenticated user. | Yes |
-| DELETE | `/trip-items/:tripItemId` | Deletes one trip item if the parent trip belongs to the authenticated user. | Yes |
+| Method | Endpoint                  | Purpose                                                                                                                                                   | Auth |
+| ------ | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| POST   | `/trips/:tripId/items`    | Creates a new trip item inside a trip.                                                                                                                    | Yes  |
+| GET    | `/trips/:tripId/items`    | Returns all trip items for a trip. Supports optional filtering by allowed trip item type or status values, for example `?type=flight` or `?status=booked` | Yes  |
+| GET    | `/trip-items/:tripItemId` | Returns one trip item if the parent trip belongs to the authenticated user.                                                                               | Yes  |
+| PATCH  | `/trip-items/:tripItemId` | Updates one trip item if the parent trip belongs to the authenticated user.                                                                               | Yes  |
+| DELETE | `/trip-items/:tripItemId` | Deletes one trip item if the parent trip belongs to the authenticated user.                                                                               | Yes  |
 
 Allowed trip item type values:
 
@@ -349,21 +355,21 @@ planned, booked, completed, cancelled
 
 ### PDF export route
 
-| Method | Endpoint | Purpose | Auth |
-| --- | --- | --- | --- |
-| POST | `/trips/:tripId/export/itinerary` | Generates a downloadable PDF itinerary for a trip. | Yes |
+| Method | Endpoint                          | Purpose                                            | Auth |
+| ------ | --------------------------------- | -------------------------------------------------- | ---- |
+| POST   | `/trips/:tripId/export/itinerary` | Generates a downloadable PDF itinerary for a trip. | Yes  |
 
 ### Admin routes
 
 All admin routes require an admin JWT.
 
-| Method | Endpoint | Purpose | Auth |
-| --- | --- | --- | --- |
-| GET | `/admin/trips` | Returns all trips across all users. | Admin only |
-| GET | `/admin/trips/:tripId` | Returns one trip across any user account. | Admin only |
-| DELETE | `/admin/trips/:tripId` | Deletes one trip across any user account. | Admin only |
-| GET | `/admin/trip-items` | Returns all trip items across all users. | Admin only |
-| GET | `/admin/trip-items/:tripItemId` | Returns one trip item across any user account. | Admin only |
+| Method | Endpoint                        | Purpose                                        | Auth       |
+| ------ | ------------------------------- | ---------------------------------------------- | ---------- |
+| GET    | `/admin/trips`                  | Returns all trips across all users.            | Admin only |
+| GET    | `/admin/trips/:tripId`          | Returns one trip across any user account.      | Admin only |
+| DELETE | `/admin/trips/:tripId`          | Deletes one trip across any user account.      | Admin only |
+| GET    | `/admin/trip-items`             | Returns all trip items across all users.       | Admin only |
+| GET    | `/admin/trip-items/:tripItemId` | Returns one trip item across any user account. | Admin only |
 | DELETE | `/admin/trip-items/:tripItemId` | Deletes one trip item across any user account. | Admin only |
 
 ## Example Requests
@@ -474,21 +480,21 @@ Current test suites include:
 
 The tests cover successful requests, validation errors, authentication errors, authorisation behaviour, CRUD functionality, and admin-only route access.
 
-## Frontend Pages Supported by the API
+## Frontend Integration
 
-This backend is designed to support the following future frontend pages:
+This backend is designed to support the following frontend pages:
 
-| Page | Purpose | Main API endpoints |
-| --- | --- | --- |
-| Landing page | Introduces the application. | None |
-| Sign up page | Allows a new user to create an account. | `POST /auth/register` |
-| Login page | Allows an existing user to log in. | `POST /auth/login` |
-| Dashboard | Displays the authenticated user's trip list. | `GET /auth/me`, `GET /trips` |
-| Trip detail page | Displays one trip and its itinerary timeline. | `GET /trips/:tripId`, `GET /trips/:tripId/items`, `POST /trips/:tripId/export/itinerary` |
-| Trip form page | Creates or edits a trip's details. | `POST /trips`, `PATCH /trips/:tripId` |
-| Trip item form page | Creates or edits one itinerary item. | `POST /trips/:tripId/items`, `GET /trip-items/:tripItemId`, `PATCH /trip-items/:tripItemId`, `DELETE /trip-items/:tripItemId` |
-| Admin trips page | Allows admin users to view and delete trips across users. | `GET /admin/trips`, `GET /admin/trips/:tripId`, `DELETE /admin/trips/:tripId` |
-| Admin trip items page | Allows admin users to view and delete trip items across users. | `GET /admin/trip-items`, `GET /admin/trip-items/:tripItemId`, `DELETE /admin/trip-items/:tripItemId` |
+| Frontend page       | Purpose                                                                                  | Main API endpoints                                                                               |
+| ------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Home page           | Introduces the application and links users to sign up or log in.                         | None                                                                                             |
+| Register page       | Allows a new user to create an account.                                                  | `POST /auth/register`                                                                            |
+| Login page          | Allows an existing user to log in.                                                       | `POST /auth/login`, `GET /auth/me`                                                               |
+| Trips page          | Displays the authenticated user's trips and supports status filtering.                   | `GET /auth/me`, `GET /trips`                                                                     |
+| New trip page       | Creates a new trip.                                                                      | `POST /trips`                                                                                    |
+| Edit trip page      | Updates or deletes a trip.                                                               | `GET /trips/:tripId`, `PATCH /trips/:tripId`, `DELETE /trips/:tripId`                            |
+| Trip detail page    | Displays one trip's itinerary, filters its itinerary items, and exports a PDF itinerary. | `GET /trips/:tripId`, `GET /trips/:tripId/items`, `POST /trips/:tripId/export/itinerary`         |
+| New trip item page  | Creates a new itinerary item inside a trip.                                              | `POST /trips/:tripId/items`                                                                      |
+| Edit trip item page | Updates or deletes one itinerary item.                                                   | `GET /trip-items/:tripItemId`, `PATCH /trip-items/:tripItemId`, `DELETE /trip-items/:tripItemId` |
 
 ## Future Improvements
 
@@ -499,3 +505,4 @@ Future improvements include:
 - More advanced local date/time and timezone handling.
 - Pagination for list routes.
 - Additional filtering and sorting options.
+- Frontend admin dashboard for the admin API routes.
