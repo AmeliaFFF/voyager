@@ -207,10 +207,15 @@ frontend/
 │   ├── components/
 │   │   ├── ContentCard.jsx
 │   │   ├── FeedbackMessage.jsx
+│   │   ├── FeedbackMessage.test.jsx
 │   │   ├── TripCard.jsx
+│   │   ├── TripCard.test.jsx
 │   │   ├── TripForm.jsx
+│   │   ├── TripForm.test.jsx
 │   │   ├── TripItemCard.jsx
-│   │   └── TripItemForm.jsx
+│   │   ├── TripItemCard.test.jsx
+│   │   ├── TripItemForm.jsx
+│   │   └── TripItemForm.test.jsx
 │   ├── constants/
 │   │   ├── tripConstants.js
 │   │   └── tripItemConstants.js
@@ -225,18 +230,24 @@ frontend/
 │   │   ├── EditTripItemPage.jsx
 │   │   ├── EditTripPage.jsx
 │   │   ├── HomePage.jsx
+│   │   ├── HomePage.test.jsx
 │   │   ├── LoginPage.jsx
+│   │   ├── LoginPage.test.jsx
 │   │   ├── NewTripItemPage.jsx
 │   │   ├── NewTripPage.jsx
 │   │   ├── NotFoundPage.jsx
+│   │   ├── NotFoundPage.test.jsx
 │   │   ├── RegisterPage.jsx
+│   │   ├── RegisterPage.test.jsx
 │   │   ├── TripDetailPage.jsx
 │   │   └── TripsPage.jsx
 │   ├── routes/
 │   │   ├── AppRoutes.jsx
-│   │   └── ProtectedRoute.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   └── ProtectedRoute.test.jsx
 │   ├── test/
-│   │   └── setup.js
+│   │   ├── setup.js
+│   │   └── testUtils.jsx
 │   ├── theme/
 │   │   └── theme.js
 │   ├── utils/
