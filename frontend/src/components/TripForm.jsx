@@ -111,8 +111,10 @@ function TripForm({
             type="number"
             value={formData.budget}
             onChange={onChange}
-            inputProps={{
-              min: 0,
+            slotProps={{
+              htmlInput: {
+                min: 0,
+              },
             }}
           />
 

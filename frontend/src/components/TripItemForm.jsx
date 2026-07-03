@@ -161,8 +161,10 @@ function TripItemForm({
             type="number"
             value={formData.cost}
             onChange={onChange}
-            inputProps={{
-              min: 0,
+            slotProps={{
+              htmlInput: {
+                min: 0,
+              },
             }}
           />
 
