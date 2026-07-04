@@ -246,7 +246,8 @@ frontend/
 │   │   ├── AppRoutes.jsx
 │   │   ├── ProtectedRoute.jsx
 │   │   ├── ProtectedRoute.test.jsx
-│   │   └── PublicOnlyRoute.jsx
+│   │   ├── PublicOnlyRoute.jsx
+│   │   └── PublicOnlyRoute.test.jsx
 │   ├── test/
 │   │   ├── setup.js
 │   │   └── testUtils.jsx

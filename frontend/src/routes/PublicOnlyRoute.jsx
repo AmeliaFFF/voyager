@@ -3,9 +3,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 
 function PublicOnlyRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isAuthLoading } = useAuth();
 
-  if (isLoading) {
+  if (isAuthLoading) {
     return <Typography>Checking your session...</Typography>;
   }
 
