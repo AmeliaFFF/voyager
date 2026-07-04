@@ -20,12 +20,13 @@ function renderProtectedRoute(authValue) {
 }
 
 describe("ProtectedRoute", () => {
-  it("renders nothing while authentication state is loading", () => {
+  it("shows a loading message while authentication state is loading", () => {
     renderProtectedRoute({
       isAuthenticated: false,
       isAuthLoading: true,
     });
 
+    expect(screen.getByText("Checking your session...")).toBeInTheDocument();
     expect(screen.queryByText("Protected trips page")).not.toBeInTheDocument();
     expect(screen.queryByText("Login page")).not.toBeInTheDocument();
   });

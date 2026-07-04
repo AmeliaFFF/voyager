@@ -10,11 +10,12 @@ The frontend was designed as the user-facing web application for Voyager.
 
 It supports:
 
-- Home page with entry points for registration and login.
+- Auth-aware home page with public calls to action and authenticated trip actions.
 - User registration.
 - User login and logout.
 - Restored authenticated sessions using a saved JWT.
 - Protected routes for authenticated users.
+- Public-only login and registration routes that redirect authenticated users to their trips.
 - Trip create, read, update, delete, and status filtering.
 - Trip item create, read, update, delete, type filtering, and status filtering.
 - PDF itinerary export from a trip detail page.
@@ -176,18 +177,18 @@ Responsive design examples include:
 
 ## Application Routes
 
-| Route                                   | Access    | Purpose                                                                                    |
-| --------------------------------------- | --------- | ------------------------------------------------------------------------------------------ |
-| `/`                                     | Public    | Home page with application introduction and navigation to register or log in.              |
-| `/register`                             | Public    | Register a new user account.                                                               |
-| `/login`                                | Public    | Log in to an existing account.                                                             |
-| `/trips`                                | Protected | View the authenticated user's trips and filter them by status.                             |
-| `/trips/new`                            | Protected | Create a new trip.                                                                         |
-| `/trips/:tripId`                        | Protected | View one trip, manage itinerary items, filter itinerary items, and export a PDF itinerary. |
-| `/trips/:tripId/edit`                   | Protected | Edit or delete one trip.                                                                   |
-| `/trips/:tripId/items/new`              | Protected | Create a new itinerary item for a trip.                                                    |
-| `/trips/:tripId/items/:tripItemId/edit` | Protected | Edit or delete one itinerary item.                                                         |
-| `*`                                     | Public    | Not found page for unmatched routes.                                                       |
+| Route                                   | Access      | Purpose                                                                                    |
+| --------------------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
+| `/`                                     | Public      | Home page with application introduction and navigation to register or log in.              |
+| `/register`                             | Public only | Register a new user account. Redirects authenticated users to `/trips`                     |
+| `/login`                                | Public only | Log in to an existing account. Redirects authenticated users to `/trips`                   |
+| `/trips`                                | Protected   | View the authenticated user's trips and filter them by status.                             |
+| `/trips/new`                            | Protected   | Create a new trip.                                                                         |
+| `/trips/:tripId`                        | Protected   | View one trip, manage itinerary items, filter itinerary items, and export a PDF itinerary. |
+| `/trips/:tripId/edit`                   | Protected   | Edit or delete one trip.                                                                   |
+| `/trips/:tripId/items/new`              | Protected   | Create a new itinerary item for a trip.                                                    |
+| `/trips/:tripId/items/:tripItemId/edit` | Protected   | Edit or delete one itinerary item.                                                         |
+| `*`                                     | Public      | Not found page for unmatched routes.                                                       |
 
 ## Project Structure
 
@@ -244,7 +245,8 @@ frontend/
 │   ├── routes/
 │   │   ├── AppRoutes.jsx
 │   │   ├── ProtectedRoute.jsx
-│   │   └── ProtectedRoute.test.jsx
+│   │   ├── ProtectedRoute.test.jsx
+│   │   └── PublicOnlyRoute.jsx
 │   ├── test/
 │   │   ├── setup.js
 │   │   └── testUtils.jsx
@@ -346,6 +348,6 @@ Future improvements include:
 
 - Frontend admin dashboard for the existing backend admin API routes.
 - More advanced search and sorting options.
-- More detailed loading states.
-- More component and page-level tests.
+- Additional loading, empty-state, and error-state polish.
+- More async page-level tests for API-driven pages.
 - Browser-based end-to-end tests using a tool such as Playwright or Cypress.
