@@ -15,6 +15,10 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const successMessage = location.state?.successMessage;
+  const fromLocation = location.state?.from;
+  const redirectPath = fromLocation
+    ? `${fromLocation.pathname}${fromLocation.search || ""}${fromLocation.hash || ""}`
+    : "/trips";
   const { login } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -48,7 +52,7 @@ function LoginPage() {
 
     try {
       await login(formData);
-      navigate("/trips");
+      navigate(redirectPath, { replace: true });
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
@@ -100,7 +104,7 @@ function LoginPage() {
               {isSubmitting ? "Logging in..." : "Log in"}
             </Button>
 
-            <Button component={RouterLink} to="/register">
+            <Button component={RouterLink} to="/register" variant="outlined">
               Create an account
             </Button>
           </Stack>

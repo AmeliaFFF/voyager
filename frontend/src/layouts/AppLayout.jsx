@@ -39,7 +39,7 @@ function AppLayout() {
           {isAuthenticated ? (
             <>
               <Button component={RouterLink} to="/trips" color="inherit">
-                Trips
+                My trips
               </Button>
 
               <Button onClick={logout} color="inherit">

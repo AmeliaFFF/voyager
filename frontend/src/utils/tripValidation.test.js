@@ -63,6 +63,15 @@ describe("validateTripForm", () => {
     expect(formatApiDateForInput("2026-09-01T00:00:00.000Z")).toBe("2026-09-01");
   });
 
+  it("requires budget to be a valid number", () => {
+    expect(
+      validateTripForm({
+        ...validTripFormData,
+        budget: "abc",
+      }),
+    ).toBe("Budget must be a valid number.");
+  });
+
   it("does not allow a negative budget", () => {
     expect(
       validateTripForm({

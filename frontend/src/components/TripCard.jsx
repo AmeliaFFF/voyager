@@ -5,18 +5,11 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { formatStatusLabel } from "../utils/statusUtils.js";
+import { formatLocalDate } from "../utils/tripItemUtils.js";
 import ContentCard from "./ContentCard.jsx";
 
-function formatDate(dateValue) {
-  if (!dateValue) {
-    return "Date not set";
-  }
-
-  return new Intl.DateTimeFormat("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(dateValue));
+function formatTripDate(dateValue) {
+  return formatLocalDate(dateValue) || "Date not set";
 }
 
 function formatBudget(trip) {
@@ -113,7 +106,7 @@ function TripCard({ trip }) {
           </Typography>
 
           <Typography>
-            {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
+            {formatTripDate(trip.startDate)} - {formatTripDate(trip.endDate)}
           </Typography>
 
           <Typography

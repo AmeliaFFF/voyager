@@ -1,3 +1,4 @@
+import Typography from "@mui/material/Typography";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 
@@ -6,7 +7,7 @@ function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
 
   if (isAuthLoading) {
-    return null;
+    return <Typography>Checking your session...</Typography>;
   }
 
   if (!isAuthenticated) {

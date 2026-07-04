@@ -165,6 +165,8 @@ function TripsPage() {
 
       {errorMessage ? <FeedbackMessage>{errorMessage}</FeedbackMessage> : null}
 
+      {isLoading ? <Typography>Loading trips...</Typography> : null}
+
       {!isLoading && !errorMessage && trips.length === 0 ? (
         <ContentCard>
           <Stack spacing={1}>

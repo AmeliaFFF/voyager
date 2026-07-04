@@ -85,7 +85,7 @@ function EditTripPage() {
       endDate: formData.endDate,
       status: formData.status,
       notes: formData.notes.trim(),
-      budget: formData.budget === "" ? undefined : Number(formData.budget),
+      budget: formData.budget === "" ? null : Number(formData.budget),
       currencyCode: formData.currencyCode.trim() || undefined,
     };
   }

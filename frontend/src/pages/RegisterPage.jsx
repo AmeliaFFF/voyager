@@ -112,7 +112,7 @@ function RegisterPage() {
               {isSubmitting ? "Creating account..." : "Create account"}
             </Button>
 
-            <Button component={RouterLink} to="/login">
+            <Button component={RouterLink} to="/login" variant="outlined">
               Already have an account? Log in
             </Button>
           </Stack>

@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
+import PublicOnlyRoute from "./PublicOnlyRoute.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -23,12 +24,17 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "login",
-        element: <LoginPage />,
-      },
-      {
-        path: "register",
-        element: <RegisterPage />,
+        element: <PublicOnlyRoute />,
+        children: [
+          {
+            path: "login",
+            element: <LoginPage />,
+          },
+          {
+            path: "register",
+            element: <RegisterPage />,
+          },
+        ],
       },
       {
         element: <ProtectedRoute />,

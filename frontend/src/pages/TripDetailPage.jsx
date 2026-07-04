@@ -470,7 +470,7 @@ function TripDetailPage() {
               <ContentCard>
                 <Stack spacing={1}>
                   <Typography
-                    component="h4"
+                    component="h3"
                     sx={{
                       color: "text.primary",
                       fontSize: {

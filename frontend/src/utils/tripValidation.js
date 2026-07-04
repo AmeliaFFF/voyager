@@ -38,6 +38,10 @@ export function validateTripForm(formData) {
     return "Start date must be before or equal to end date.";
   }
 
+  if (formData.budget !== "" && Number.isNaN(Number(formData.budget))) {
+    return "Budget must be a valid number.";
+  }
+
   if (formData.budget !== "" && Number(formData.budget) < 0) {
     return "Budget cannot be negative.";
   }
