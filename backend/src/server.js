@@ -1,8 +1,11 @@
+const fs = require("node:fs");
 const { loadEnvFile } = require("node:process");
 const app = require("./app");
 const { dbConnect } = require("./utils/database");
 
-loadEnvFile();
+if (fs.existsSync(".env")) {
+    loadEnvFile();
+}
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,5 +17,7 @@ dbConnect()
         });
     })
     .catch((error) => {
-        console.log("Server startup cancelled due to database connection failure.");
+        console.log(
+            "Server startup cancelled due to database connection failure."
+        );
     });
