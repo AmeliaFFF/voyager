@@ -12,13 +12,18 @@ const app = express();
 
 app.use(helmet());
 
-app.use(cors({
-    origin: [
-        "http://localhost:5173", // For Vite/React.
-        "http://localhost:3000" // For local development.
-    ],
-    optionsSuccessStatus: 200
-}));
+const allowedOrigins = [
+    "http://localhost:5173", // For Vite/React local development.
+    "http://localhost:3000", // For local development.
+    process.env.FRONTEND_URL // For deployed frontend.
+].filter(Boolean);
+
+app.use(
+    cors({
+        origin: allowedOrigins,
+        optionsSuccessStatus: 200
+    })
+);
 
 app.use(express.json());
 app.use(requestLogger);
