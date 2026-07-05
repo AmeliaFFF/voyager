@@ -280,6 +280,7 @@ frontend/
 ├── package-lock.json
 ├── package.json
 ├── README.md
+├── vercel.json
 └── vite.config.js
 ```
 
