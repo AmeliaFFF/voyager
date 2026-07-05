@@ -4,6 +4,14 @@ Voyager is a MERN travel planning application for creating trips, managing itine
 
 This repository is structured as a monorepo with separate folders for the backend API, frontend web application, and Bruno API testing collection.
 
+## Live Demo
+
+The deployed Voyager application is available at:
+
+https://voyagertravelplanner.vercel.app
+
+The frontend is deployed with Vercel and connects to the deployed backend API on Render.
+
 ## Applications
 
 | Folder      | Purpose                                                                                                                                                                                             | Documentation                                    |
@@ -120,7 +128,7 @@ npm test
 Run the backend test suite with a coverage report:
 
 ```bash
-npm test:coverage
+npm run test:coverage
 ```
 
 The coverage command runs the tests as well, so both commands do not need to be run.
