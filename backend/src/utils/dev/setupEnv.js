@@ -41,7 +41,7 @@ async function setupEnv() {
 
         await fs.writeFile(".env", stringToWrite);
 
-        console.log("Written the following data to '.env':\n" + stringToWrite);
+        console.log("Environment variables successfully written to '.env'.");
     } else {
         console.log("No data to write, skipping operations.");
     }

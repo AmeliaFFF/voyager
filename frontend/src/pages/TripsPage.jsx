@@ -88,12 +88,11 @@ function TripsPage() {
           xs: "column",
           sm: "row",
         }}
-        justifyContent="space-between"
-        alignItems={{
-          xs: "stretch",
-          sm: "center",
-        }}
         sx={{
+          alignItems: {
+            xs: "stretch",
+            sm: "center",
+          },
           gap: 2,
         }}
       >

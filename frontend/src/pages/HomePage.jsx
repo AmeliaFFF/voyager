@@ -73,8 +73,8 @@ function HomePage() {
       >
         <Stack
           spacing={3}
-          alignItems="center"
           sx={{
+            alignItems: "center",
             mx: "auto",
             maxWidth: 760,
             width: "100%",
@@ -115,8 +115,8 @@ function HomePage() {
                 sm: "row",
               }}
               spacing={2}
-              alignItems="center"
               sx={{
+                alignItems: "center",
                 width: {
                   xs: "100%",
                   sm: "auto",
