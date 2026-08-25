@@ -188,11 +188,11 @@ function TripDetailPage() {
           xs: "column",
           sm: "row",
         }}
-        alignItems={{
-          xs: "stretch",
-          sm: "flex-start",
-        }}
         sx={{
+          alignItems: {
+            xs: "stretch",
+            sm: "flex-start",
+          },
           gap: 2,
           width: "100%",
         }}
@@ -368,11 +368,11 @@ function TripDetailPage() {
                 xs: "column",
                 sm: "row",
               }}
-              alignItems={{
-                xs: "stretch",
-                sm: "center",
-              }}
               sx={{
+                alignItems: {
+                  xs: "stretch",
+                  sm: "center",
+                },
                 gap: 2,
               }}
             >

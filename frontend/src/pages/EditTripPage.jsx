@@ -181,11 +181,11 @@ function EditTripPage() {
                   xs: "column",
                   md: "row",
                 }}
-                alignItems={{
-                  xs: "stretch",
-                  md: "center",
-                }}
                 sx={{
+                  alignItems: {
+                    xs: "stretch",
+                    md: "center",
+                  },
                   gap: 2,
                   mt: 3,
                 }}

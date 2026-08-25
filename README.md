@@ -46,6 +46,7 @@ voyager/
 ├── bruno/
 ├── frontend/
 ├── .gitignore
+├── .nvmrc
 └── README.md
 ```
 
