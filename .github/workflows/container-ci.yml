@@ -1,0 +1,61 @@
+name: Container CI
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test_containers:
+    name: Test Container Images
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:8.0
+        ports:
+          # host:container
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval \"db.adminCommand('ping').ok\""
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      # Checkout the repository so the Dockerfiles and application code are available.
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      # Build and run the frontend test image.
+      - name: Build frontend test image
+        run: |
+          docker build \
+            --target test \
+            --tag voyager-frontend:test \
+            ./frontend
+
+      - name: Run frontend tests
+        run: docker run --rm voyager-frontend:test
+
+      # Build and run the backend test image.
+      - name: Build backend test image
+        run: |
+          docker build \
+            --target test \
+            --tag voyager-backend:test \
+            ./backend
+
+      - name: Run backend tests
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: |
+          docker run --rm \
+            --network host \
+            -e NODE_ENV=test \
+            -e JWT_SECRET_KEY \
+            -e DATABASE_URL=mongodb://127.0.0.1:27017/voyager_test \
+            voyager-backend:test
