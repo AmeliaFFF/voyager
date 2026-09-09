@@ -10,8 +10,8 @@ COPY package*.json ./
 # Install all dependencies required for development.
 RUN npm ci
 
-# Copy the application source code.
-COPY src ./src
+# Copy the backend project files required for development and testing.
+COPY . .
 
 ENV NODE_ENV=development
 
@@ -30,7 +30,7 @@ FROM development AS test
 
 ENV NODE_ENV=test
 
-CMD ["npm", "test"]
+CMD ["node", "./node_modules/jest/bin/jest.js", "--runInBand"]
 
 
 # Production stage.
