@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Test and coverage output
+coverage/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Version control
+.git/
+.gitignore
+
+# Documentation
+README.md
+
+# Operating system files
+.DS_Store
+Thumbs.db
