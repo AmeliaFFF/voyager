@@ -42,11 +42,13 @@ The application currently supports:
 
 ```txt
 voyager/
+├── .github/
 ├── backend/
 ├── bruno/
 ├── frontend/
 ├── .gitignore
 ├── .nvmrc
+├── compose.yaml
 └── README.md
 ```
 
@@ -114,7 +116,67 @@ Each application has its own `.env.example` file. Use these example files as tem
 | [backend/.env.example](./backend/.env.example)   | Backend server port, JWT secret, and MongoDB database connection string. |
 | [frontend/.env.example](./frontend/.env.example) | Frontend API base URL used to connect to the backend.                    |
 
-## Testing
+## Containerised Development
+
+Voyager can also be run as a containerised development environment using Docker Compose.
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- The React frontend using Vite on `http://localhost:5173`
+- The Node.js and Express backend on `http://localhost:3000`
+- A MongoDB container used by the backend.
+
+The services run on a shared Docker network. The backend connects to MongoDB using the `mongodb` service hostname, while MongoDB data is persisted using a named Docker volume.
+
+The MongoDB service includes a health check, and the backend waits for MongoDB to become healthy before starting.
+
+Stop the containerised development environment with:
+
+```bash
+docker compose down
+```
+
+### Container Images
+
+The frontend and backend Dockerfiles provide separate targets for development, testing, and production.
+
+The backend production image installs production dependencies only and runs the Express application using Node.js.
+
+The frontend production image uses a multi-stage build. Vite first compiles the React application into static files, which are then served by Nginx. The Nginx configuration includes a fallback to `index.html` so React Router routes continue to work when loaded or refreshed directly.
+
+### Container Testing
+
+Frontend and backend test images can be built using the `test` target in each Dockerfile.
+
+The GitHub Actions workflow automatically builds and runs both test images. Backend integration tests run against a temporary MongoDB service, with the JWT secret supplied securely through GitHub repository secrets.
+
+### CI/CD and Container Registry
+
+The workflow in [`.github/workflows/container-ci.yml`](./.github/workflows/container-ci.yml) automatically tests Voyager's container images.
+
+After successful tests on `main`, production frontend and backend images are built and published to the GitHub Container Registry (GHCR).
+
+Published images use multiple tags:
+
+```txt
+ghcr.io/ameliafff/voyager-frontend:latest
+ghcr.io/ameliafff/voyager-frontend:v1.0.0-prod
+ghcr.io/ameliafff/voyager-frontend:v1.0.0-prod-<git-sha>
+
+ghcr.io/ameliafff/voyager-backend:latest
+ghcr.io/ameliafff/voyager-backend:v1.0.0-prod
+ghcr.io/ameliafff/voyager-backend:v1.0.0-prod-<git-sha>
+```
+
+The tags identify the application version, production environment, and Git revision, while `latest` provides a convenient reference to the current production image.
+
+## Local Testing
 
 ### Backend
 
