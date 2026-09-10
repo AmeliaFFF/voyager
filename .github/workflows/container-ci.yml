@@ -59,3 +59,73 @@ jobs:
             -e JWT_SECRET_KEY \
             -e DATABASE_URL=mongodb://127.0.0.1:27017/voyager_test \
             voyager-backend:test
+
+  publish_images:
+    name: Publish Production Images
+    needs: test_containers
+    runs-on: ubuntu-latest
+
+    # Publish automatically from main, or when the workflow is run manually.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      APP_VERSION: "1.0.0"
+      REGISTRY: ghcr.io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Prepare image metadata
+        id: image_meta
+        run: |
+          echo "owner_lc=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and push backend production image
+        uses: docker/build-push-action@v7
+        with:
+          context: ./backend
+          target: production
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.image_meta.outputs.owner_lc }}/voyager-backend:v${{ env.APP_VERSION }}-prod-${{ steps.image_meta.outputs.short_sha }}
+            ${{ env.REGISTRY }}/${{ steps.image_meta.outputs.owner_lc }}/voyager-backend:v${{ env.APP_VERSION }}-prod
+            ${{ env.REGISTRY }}/${{ steps.image_meta.outputs.owner_lc }}/voyager-backend:latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.APP_VERSION }}
+
+      - name: Build and push frontend production image
+        uses: docker/build-push-action@v7
+        with:
+          context: ./frontend
+          target: production
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=http://localhost:3000
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.image_meta.outputs.owner_lc }}/voyager-frontend:v${{ env.APP_VERSION }}-prod-${{ steps.image_meta.outputs.short_sha }}
+            ${{ env.REGISTRY }}/${{ steps.image_meta.outputs.owner_lc }}/voyager-frontend:v${{ env.APP_VERSION }}-prod
+            ${{ env.REGISTRY }}/${{ steps.image_meta.outputs.owner_lc }}/voyager-frontend:latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.APP_VERSION }}
