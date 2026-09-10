@@ -1,9 +1,6 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
-
 # Test and coverage output
 coverage/
 
@@ -15,6 +12,13 @@ coverage/
 # Logs
 *.log
 npm-debug.log*
+
+# Version control
+.git/
+.gitignore
+
+# Documentation
+README.md
 
 # Operating system files
 .DS_Store
