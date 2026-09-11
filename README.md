@@ -45,6 +45,7 @@ voyager/
 ├── .github/
 ├── backend/
 ├── bruno/
+├── docs/
 ├── frontend/
 ├── .gitignore
 ├── .nvmrc
@@ -265,7 +266,8 @@ Admin-only requests require a JWT for a user with `isAdmin: true`
 
 ## Documentation
 
-More detailed documentation is available in each application folder:
+More detailed project documentation is available below:
 
 - [Backend README](./backend/README.md)
 - [Frontend README](./frontend/README.md)
+- [Containerisation Architecture](./docs/containerisation.md)
