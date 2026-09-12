@@ -159,7 +159,7 @@ The GitHub Actions workflow automatically builds and runs both test images. Back
 
 ### CI/CD and Container Registry
 
-The workflow in [`.github/workflows/container-ci.yml`](./.github/workflows/container-ci.yml) automatically tests Voyager's container images.
+The workflow in [.github/workflows/container-ci.yml](./.github/workflows/container-ci.yml) automatically tests Voyager's container images.
 
 After successful tests on `main`, production frontend and backend images are built and published to the GitHub Container Registry (GHCR).
 
