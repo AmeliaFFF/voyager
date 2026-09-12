@@ -271,12 +271,15 @@ frontend/
 │   ├── App.jsx
 │   ├── App.test.jsx
 │   └── main.jsx
+├── .dockerignore
 ├── .env.example
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc
+├── Dockerfile
 ├── eslint.config.js
 ├── index.html
+├── nginx.conf
 ├── package-lock.json
 ├── package.json
 ├── README.md
@@ -320,6 +323,18 @@ Error handling is supported by:
 - Reusable `FeedbackMessage` component.
 - Inline form validation before API requests.
 - Defensive fallbacks when optional response data is missing.
+
+## Docker
+
+The frontend Dockerfile provides separate `development`, `test`, `build`, and `production` targets.
+
+The development target runs the application using the Vite development server on port `5173`. The test target runs the Vitest test suite.
+
+For production, Vite compiles the React application into static files during the build stage. These files are copied into a lightweight Nginx image and served on port `80`.
+
+The included `nginx.conf` provides a fallback to `index.html` so client-side React Router routes work when loaded or refreshed directly.
+
+See the [root README](../README.md) for the complete Docker Compose, container testing, CI/CD, and GHCR workflow.
 
 ## Testing
 

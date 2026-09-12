@@ -137,7 +137,10 @@ voyager/
 │   │   ├── authRoutes.test.js
 │   │   ├── tripItemRoutes.test.js
 │   │   └── tripRoutes.test.js
+│   ├── .dockerignore
 │   ├── .env.example
+│   ├── .prettierrc
+│   ├── Dockerfile
 │   ├── package-lock.json
 │   ├── package.json
 │   └── README.md
@@ -208,6 +211,7 @@ http://localhost:3000
 | `PORT`           | No       | Port used by the Express server. Defaults to `3000` if not provided. |
 | `JWT_SECRET_KEY` | Yes      | Secret key used to sign and verify JWTs.                             |
 | `DATABASE_URL`   | Yes      | MongoDB connection string used by Mongoose.                          |
+| `FRONTEND_URL`   | No       | Additional frontend origin permitted by the API CORS configuration.  |
 
 ## Available Scripts
 
@@ -454,6 +458,20 @@ Example error response:
     "message": "Trip not found."
 }
 ```
+
+## Docker
+
+The backend Dockerfile provides separate `development`, `test`, and `production` targets.
+
+The development target runs the Express server in Node.js watch mode. The test target includes the development dependencies required by Jest and Supertest. The production target installs production dependencies only and runs the application as the non-root `node` user.
+
+The backend is normally started as part of the complete containerised development environment from the Voyager repository root:
+
+```bash
+docker compose up --build
+```
+
+See the [root README](../README.md) for the complete Docker Compose, container testing, CI/CD, and GHCR workflow.
 
 ## Testing
 
