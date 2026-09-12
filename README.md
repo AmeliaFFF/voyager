@@ -168,11 +168,11 @@ Published images use multiple tags:
 ```txt
 ghcr.io/ameliafff/voyager-frontend:latest
 ghcr.io/ameliafff/voyager-frontend:v1.0.0-prod
-ghcr.io/ameliafff/voyager-frontend:v1.0.0-prod-<git-sha>
+ghcr.io/ameliafff/voyager-frontend:v1.0.0-prod-<short-sha>
 
 ghcr.io/ameliafff/voyager-backend:latest
 ghcr.io/ameliafff/voyager-backend:v1.0.0-prod
-ghcr.io/ameliafff/voyager-backend:v1.0.0-prod-<git-sha>
+ghcr.io/ameliafff/voyager-backend:v1.0.0-prod-<short-sha>
 ```
 
 The tags identify the application version, production environment, and Git revision, while `latest` provides a convenient reference to the current production image.
