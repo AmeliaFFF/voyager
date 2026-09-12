@@ -19,6 +19,7 @@ npm-debug.log*
 
 # Documentation
 README.md
+docs/
 
 # Operating system files
 .DS_Store
