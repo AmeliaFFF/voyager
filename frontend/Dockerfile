@@ -49,7 +49,7 @@ RUN npm run build
 
 
 # Production stage.
-FROM nginx:alpine AS production
+FROM nginx:alpine-slim AS production
 
 # Configure Nginx to support React Router client-side routes.
 COPY nginx.conf /etc/nginx/conf.d/default.conf
