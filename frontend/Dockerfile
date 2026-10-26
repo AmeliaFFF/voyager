@@ -1,5 +1,5 @@
 # Development stage.
-FROM node:24-alpine AS development
+FROM node:24.22.1-alpine AS development
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ CMD ["npm", "run", "test:run"]
 
 
 # Build stage.
-FROM node:24-alpine AS build
+FROM node:24.22.1-alpine AS build
 
 WORKDIR /app
 
@@ -49,7 +49,7 @@ RUN npm run build
 
 
 # Production stage.
-FROM nginx:alpine AS production
+FROM nginx:alpine-slim AS production
 
 # Configure Nginx to support React Router client-side routes.
 COPY nginx.conf /etc/nginx/conf.d/default.conf

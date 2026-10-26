@@ -1,5 +1,5 @@
 # Development stage.
-FROM node:24-alpine AS development
+FROM node:24.22.1-alpine AS development
 
 # Put the backend application into its own directory.
 WORKDIR /app
@@ -34,7 +34,7 @@ CMD ["node", "./node_modules/jest/bin/jest.js", "--runInBand"]
 
 
 # Production stage.
-FROM node:24-alpine AS production
+FROM node:24.22.1-alpine AS production
 
 WORKDIR /app
 

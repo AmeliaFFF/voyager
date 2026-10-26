@@ -65,10 +65,10 @@ jobs:
     needs: test_containers
     runs-on: ubuntu-latest
 
-    # Publish automatically from main, or when the workflow is run manually.
+    # Publish production images only from main, including manual runs.
     if: >
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 
     permissions:
       contents: read
