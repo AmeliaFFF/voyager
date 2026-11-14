@@ -1,0 +1,27 @@
+info:
+  name: Registration requires mandatory fields
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {}
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("POST /auth/register with missing fields returns HTTP 400", () => {
+          expect(res.getStatus()).to.equal(400);
+        });
+
+        test("POST /auth/register identifies the missing fields", () => {
+          expect(res.getBody().message).to.equal("Name, email, and password are required.");
+        });

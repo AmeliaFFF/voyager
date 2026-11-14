@@ -1,0 +1,20 @@
+info:
+  name: API welcome response
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("GET / returns HTTP 200", () => {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("GET / returns the Voyager welcome message", () => {
+          expect(res.getBody().message).to.equal("Welcome to the Voyager API");
+        });
