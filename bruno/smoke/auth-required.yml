@@ -1,0 +1,20 @@
+info:
+  name: Authentication is required
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/auth/me"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("GET /auth/me without a token returns HTTP 401", () => {
+          expect(res.getStatus()).to.equal(401);
+        });
+
+        test("GET /auth/me explains why access was denied", () => {
+          expect(res.getBody().message).to.equal("Authorization header is missing.");
+        });

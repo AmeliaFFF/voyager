@@ -223,7 +223,7 @@ npm run build
 
 ## API Testing with Bruno
 
-The `bruno/` folder contains a Bruno collection for manually testing Voyager API routes, including:
+The `bruno/` folder contains a Bruno collection for manual and automated API testing, including:
 
 - Authentication routes.
 - Trip routes.
@@ -263,6 +263,47 @@ npm run dev:watch
 7. Run trip, trip item, export, or admin requests as needed.
 
 Admin-only requests require a JWT for a user with `isAdmin: true`
+
+### Automated API Smoke Tests
+
+The `bruno/smoke/` folder contains automated smoke tests that verify essential backend API functionality.
+
+The tests cover:
+
+- API availability: Verifies that `GET /` returns HTTP 200 and the expected welcome message.
+- Authentication: Verifies that `GET /auth/me` returns HTTP 401 when no authentication token is provided.
+- Input validation: Verifies that `POST /auth/register` returns HTTP 400 when required fields are missing.
+
+These tests validate API responses without requiring authentication tokens, test accounts, or modifications to the database.
+
+#### Running the Smoke Tests
+
+1. Start the backend server locally.
+2. Ensure the Bruno CLI is installed.
+3. Navigate to the `bruno/` directory.
+4. Run the following command:
+
+```bash
+bru run smoke --env local
+```
+
+The `local` environment defines the API base URL as `http://localhost:3000`
+
+The command executes the three smoke test requests and their six automated tests, reporting whether each test passes or fails.
+
+#### Testing Different Environments
+
+The smoke tests use the `{{baseUrl}}` environment variable rather than hardcoded URLs, allowing the same tests to run against different deployments.
+
+To test a deployed API, override the base URL:
+
+```bash
+bru run smoke --env local --env-var baseUrl=https://your-api-url
+```
+
+This allows the smoke tests to be reused for automated post-deployment verification within the CI/CD pipeline.
+
+**Note:** Run the `smoke` folder specifically to avoid executing the existing manual API requests, some of which require authentication.
 
 ## Documentation
 
