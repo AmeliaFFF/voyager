@@ -12,6 +12,9 @@ coverage/
 .env.*
 !.env.example
 
+# Temporary Google Cloud authentication credentials
+gha-creds-*.json
+
 # Logs
 *.log
 npm-debug.log*
