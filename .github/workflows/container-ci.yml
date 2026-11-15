@@ -135,3 +135,38 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ env.APP_VERSION }}
+
+  verify_gcp_authentication:
+    name: Verify GCP Authentication
+    needs: test_containers
+    runs-on: ubuntu-latest
+
+    # Only authenticate to GCP from main.
+    if: >
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: voyager-assessment
+          workload_identity_provider: projects/615864008809/locations/global/workloadIdentityPools/voyager-github-pool/providers/github
+          service_account: voyager-github-deployer@voyager-assessment.iam.gserviceaccount.com
+
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify Artifact Registry access
+        run: |
+          gcloud artifacts repositories describe voyager-images \
+            --location=australia-southeast1 \
+            --project=voyager-assessment \
+            --format='value(name)'
